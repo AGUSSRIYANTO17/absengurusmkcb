@@ -1220,8 +1220,8 @@
                     validateAbsenSubmitButton();
                 },
                 (err) => {
-                    gpsCoordinates = "Lokasi tidak diizinkan";
-                    document.getElementById('gps-status').innerHTML = `<span class="text-red-500 font-semibold">Izin Lokasi Ditolak / Lemah</span>`;
+                    //gpsCoordinates = "Lokasi tidak diizinkan";
+                    //document.getElementById('gps-status').innerHTML = `<span class="text-red-500 font-semibold">Izin Lokasi Ditolak / Lemah</span>`;
                     validateAbsenSubmitButton();
                 },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
