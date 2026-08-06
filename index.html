@@ -19,11 +19,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
 
-    <!-- AI estimasi umur dan klasifikasi visual pakaian -->
-    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/human@3.3.6/dist/human.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js" crossorigin="anonymous"></script>
-
     <style>
         body {
             font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
@@ -308,10 +303,6 @@
                         <div id="captured-photo-badge" class="absolute top-3 left-3 hidden z-30 px-3 py-1.5 rounded-full bg-emerald-600/90 text-white text-xs font-bold shadow-lg">
                             <i class="fa-solid fa-circle-check"></i> Foto siap dikirim
                         </div>
-                        <div id="captured-presentation-badge" class="absolute bottom-3 left-3 right-3 hidden z-30 rounded-xl bg-slate-950/80 text-white text-[10px] font-semibold px-3 py-2 shadow-lg backdrop-blur-sm">
-                            <div id="captured-neatness-overlay">✨ Kerapian: Menunggu analisis</div>
-                            <div id="captured-presentation-overlay" class="mt-0.5">📸 Kesiapan foto: Menunggu analisis</div>
-                        </div>
 
                         <!-- Panel Loading / Error / Panduan Izin Kamera -->
                         <div id="camera-loading" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 text-white p-6 gap-3 z-10 text-center">
@@ -336,34 +327,6 @@
                         </button>
                     </div>
                     <p class="text-[10px] text-center text-slate-400 -mt-1"><i class="fa-solid fa-circle-info"></i> Ambil foto terlebih dahulu. Hasil foto tampil di frame kamera, lalu tombol Kirim Absen akan aktif.</p>
-
-                    <div id="ai-photo-analysis-panel" class="rounded-xl border border-sky-100 bg-sky-50/70 p-3">
-                        <div class="flex items-center justify-between gap-3">
-                            <div class="flex items-center gap-2 text-xs font-bold text-sky-800">
-                                <i class="fa-solid fa-wand-magic-sparkles"></i> Analisis AI Foto
-                            </div>
-                            <span id="ai-analysis-status" class="text-[10px] font-bold text-slate-500">Belum dianalisis</span>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
-                            <div class="bg-white rounded-lg border border-sky-100 px-3 py-2">
-                                <div class="text-[10px] uppercase tracking-wide text-slate-400 font-bold">Prediksi Umur</div>
-                                <div id="ai-predicted-age" class="text-xs font-bold text-slate-700 mt-0.5">-</div>
-                            </div>
-                            <div class="bg-white rounded-lg border border-sky-100 px-3 py-2">
-                                <div class="text-[10px] uppercase tracking-wide text-slate-400 font-bold">Prediksi Pakaian</div>
-                                <div id="ai-predicted-clothing" class="text-xs font-bold text-slate-700 mt-0.5">-</div>
-                            </div>
-                            <div class="bg-white rounded-lg border border-sky-100 px-3 py-2">
-                                <div class="text-[10px] uppercase tracking-wide text-slate-400 font-bold">Kerapian Tampilan</div>
-                                <div id="ai-predicted-neatness" class="text-xs font-bold text-slate-700 mt-0.5">-</div>
-                            </div>
-                            <div class="bg-white rounded-lg border border-sky-100 px-3 py-2">
-                                <div class="text-[10px] uppercase tracking-wide text-slate-400 font-bold">Kesiapan Foto</div>
-                                <div id="ai-photo-presentation" class="text-xs font-bold text-slate-700 mt-0.5">-</div>
-                            </div>
-                        </div>
-                        <p class="text-[9px] text-slate-400 mt-2 leading-relaxed">Hasil AI bersifat perkiraan visual. Penilaian menggunakan kerapian, pencahayaan, ketajaman, dan posisi foto—bukan menilai cantik atau ganteng.</p>
-                    </div>
 
                 </div>
 
@@ -815,18 +778,6 @@
         let isWithinAttendanceRadius = false;
         let globalFaceExpression = "Netral";
         let capturedFaceExpression = "";
-        let capturedPredictedAge = "Belum dianalisis";
-        let capturedPredictedClothing = "Belum dianalisis";
-        let capturedPredictedNeatness = "Belum dianalisis";
-        let capturedPhotoPresentation = "Belum dianalisis";
-        let capturedAiConfidence = "";
-        let latestFaceLandmarks = [];
-        let capturedFaceLandmarks = [];
-        let isAiAnalyzing = false;
-        let ageAiEngine = null;
-        let clothingAiModel = null;
-        let aiModelsLoadingPromise = null;
-        const ATTENDANCE_AI_CACHE_KEY = 'epresensi_attendance_ai_metadata_v2';
         let faceExpressionHistory = [];
         let adminReportSummaryRows = [];
         let adminReportDetailRows = [];
@@ -893,11 +844,7 @@
                         jarak: "23.4 m",
                         nama_lokasi: "Kampus Utama (Pusat)",
                         link_map: "https://www.google.com/maps?q=-7.812115,112.012390",
-                        foto_link: "https://placehold.co/120x90/e2e8f0/475569?text=Agus",
-                        prediksi_umur: "±34 tahun",
-                        prediksi_pakaian: "Kemeja warna Biru",
-                        prediksi_kerapian: "Rapi",
-                        kualitas_tampilan: "Baik dan siap digunakan"
+                        foto_link: "https://placehold.co/120x90/e2e8f0/475569?text=Agus"
                     }
                 ];
                 localStorage.setItem("mock_presensi", JSON.stringify(mockAttendanceDb));
@@ -963,9 +910,6 @@
         const submitPresensiBtn = document.getElementById('btn-submit-presensi');
         const capturedPhotoOverlay = document.getElementById('captured-photo-overlay');
         const capturedPhotoBadge = document.getElementById('captured-photo-badge');
-        const capturedPresentationBadge = document.getElementById('captured-presentation-badge');
-        const capturedNeatnessOverlay = document.getElementById('captured-neatness-overlay');
-        const capturedPresentationOverlay = document.getElementById('captured-presentation-overlay');
         const gpsDisplay = document.getElementById('gps-coordinates');
 
         // Custom Toast Notification Maker
@@ -1190,18 +1134,8 @@
                         if (data.success) {
                             mockAttendanceDb = data.presensi;
                             mockJurnalDb = data.jurnal;
-                            // Sinkronkan metadata AI yang memang sudah ada pada database cloud ke cache lokal.
-                            (mockAttendanceDb || []).forEach(row => {
-                                const meta = extractAttendanceAiMeta(row);
-                                if (meta.age !== 'Data AI tidak tersimpan' || meta.clothing !== 'Data AI tidak tersimpan') {
-                                    saveAttendanceAiMeta(row, { age: meta.age, clothing: meta.clothing, expression: meta.expression });
-                                }
-                            });
                             renderAttendanceTable(mockAttendanceDb);
                             updateDashboardStats();
-                            // Muat ulang kartu harian setelah data lengkap diterima agar
-                            // metadata AI dapat digabungkan meski endpoint harian tidak menyertakannya.
-                            loadPresensiHariIni();
                             if (currentSession && currentSession.role === "Admin") {
                                 initializeAdminAttendanceReport();
                             }
@@ -1564,8 +1498,6 @@ function formatTanggalRekap(value){
             
             isFaceDetected = false;
             faceExpressionHistory = [];
-            latestFaceLandmarks = [];
-            capturedFaceLandmarks = [];
             globalFaceExpression = "Netral";
             updateFaceExpressionDisplay('Kamera tidak aktif', false);
             clearCapturedPhoto(false);
@@ -1647,7 +1579,6 @@ function formatTanggalRekap(value){
                 wrapper.className = "relative w-full aspect-video bg-slate-950 rounded-xl overflow-hidden border-2 border-emerald-500 transition-all duration-300 face-active";
 
                 const landmarks = results.multiFaceLandmarks[0];
-                latestFaceLandmarks = landmarks.map(point => ({ x: point.x, y: point.y, z: point.z || 0 }));
                 globalFaceExpression = stabilizeFaceExpression(estimateFaceExpression(landmarks));
                 if (!globalBase64Photo) updateFaceExpressionDisplay(globalFaceExpression, true);
 
@@ -1669,7 +1600,6 @@ function formatTanggalRekap(value){
             } else {
                 isFaceDetected = false;
                 faceExpressionHistory = [];
-                latestFaceLandmarks = [];
                 if (!globalBase64Photo) updateFaceExpressionDisplay('Menunggu wajah terdeteksi...', false);
                 faceMeshStatusBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1.5 animate-pulse";
                 faceMeshStatusBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Menunggu Deteksi...`;
@@ -1730,459 +1660,10 @@ function formatTanggalRekap(value){
             updatePresensiButtonState();
         }
 
-        function normalizeAttendanceKeyText(value) {
-            return String(value ?? '')
-                .trim()
-                .toLowerCase()
-                .replace(/\s+/g, ' ');
-        }
-
-        function getAttendanceAiCache() {
-            try {
-                const parsed = JSON.parse(localStorage.getItem(ATTENDANCE_AI_CACHE_KEY) || '{}');
-                return parsed && typeof parsed === 'object' ? parsed : {};
-            } catch (error) {
-                console.warn('Cache metadata AI rusak, cache direset:', error);
-                return {};
-            }
-        }
-
-        function buildAttendanceAiCacheKeys(record) {
-            const item = record || {};
-            const date = normalizeDateToDDMMYYYY(item.tanggal) || getTodayDateString();
-            const type = normalizeAttendanceKeyText(item.tipe || item.status || '');
-            const nip = normalizeAttendanceKeyText(item.nip || item.username || '');
-            const name = normalizeAttendanceKeyText(item.nama || item.nama_guru || '');
-            const keys = [];
-
-            if (nip && date && type) keys.push(`nip:${nip}|${date}|${type}`);
-            if (name && date && type) keys.push(`nama:${name}|${date}|${type}`);
-            return keys;
-        }
-
-        function saveAttendanceAiMeta(record, meta) {
-            const age = String(meta?.age || '').trim();
-            const clothing = String(meta?.clothing || '').trim();
-            if (!age && !clothing) return;
-
-            const cache = getAttendanceAiCache();
-            const value = {
-                age: age || 'Tidak terdeteksi',
-                clothing: clothing || 'Tidak terdeteksi',
-                neatness: String(meta?.neatness || '').trim(),
-                presentation: String(meta?.presentation || '').trim(),
-                confidence: String(meta?.confidence || '').trim(),
-                expression: String(meta?.expression || '').trim(),
-                savedAt: Date.now()
-            };
-
-            buildAttendanceAiCacheKeys(record).forEach(key => { cache[key] = value; });
-
-            // Batasi ukuran cache agar localStorage tidak terus membesar.
-            const entries = Object.entries(cache)
-                .sort((a, b) => Number(b[1]?.savedAt || 0) - Number(a[1]?.savedAt || 0))
-                .slice(0, 500);
-            localStorage.setItem(ATTENDANCE_AI_CACHE_KEY, JSON.stringify(Object.fromEntries(entries)));
-        }
-
-        function getCachedAttendanceAiMeta(record) {
-            const cache = getAttendanceAiCache();
-            for (const key of buildAttendanceAiCacheKeys(record)) {
-                if (cache[key]) return cache[key];
-            }
-            return null;
-        }
-
-        function sameAttendanceRecord(a, b) {
-            if (!a || !b) return false;
-            const dateA = normalizeDateToDDMMYYYY(a.tanggal);
-            const dateB = normalizeDateToDDMMYYYY(b.tanggal);
-            const typeA = normalizeAttendanceKeyText(a.tipe || a.status || '');
-            const typeB = normalizeAttendanceKeyText(b.tipe || b.status || '');
-            if (!dateA || !dateB || dateA !== dateB || typeA !== typeB) return false;
-
-            const nipA = normalizeAttendanceKeyText(a.nip || '');
-            const nipB = normalizeAttendanceKeyText(b.nip || '');
-            if (nipA && nipB) return nipA === nipB;
-
-            const nameA = normalizeAttendanceKeyText(a.nama || a.nama_guru || '');
-            const nameB = normalizeAttendanceKeyText(b.nama || b.nama_guru || '');
-            return Boolean(nameA && nameB && nameA === nameB);
-        }
-
-        function enrichAttendanceRecordWithFullData(record) {
-            const item = { ...(record || {}) };
-            const fullRecord = Array.isArray(mockAttendanceDb)
-                ? mockAttendanceDb.find(candidate => sameAttendanceRecord(item, candidate))
-                : null;
-
-            if (fullRecord) {
-                [
-                    'nip', 'nama', 'tanggal', 'tipe', 'keterangan', 'status_keterangan',
-                    'ekspresi', 'prediksi_umur', 'umur_prediksi', 'predicted_age',
-                    'prediksi_pakaian', 'pakaian_prediksi', 'predicted_clothing',
-                    'prediksi_kerapian', 'kerapian_tampilan', 'predicted_neatness',
-                    'kualitas_tampilan', 'kesiapan_foto', 'photo_presentation', 'ai_confidence'
-                ].forEach(field => {
-                    if ((item[field] === undefined || item[field] === null || item[field] === '') && fullRecord[field] !== undefined) {
-                        item[field] = fullRecord[field];
-                    }
-                });
-            }
-
-            return item;
-        }
-
-        function setAiAnalysisPanel(status, age = capturedPredictedAge, clothing = capturedPredictedClothing, state = 'idle', neatness = capturedPredictedNeatness, presentation = capturedPhotoPresentation) {
-            const statusEl = document.getElementById('ai-analysis-status');
-            const ageEl = document.getElementById('ai-predicted-age');
-            const clothingEl = document.getElementById('ai-predicted-clothing');
-            const neatnessEl = document.getElementById('ai-predicted-neatness');
-            const presentationEl = document.getElementById('ai-photo-presentation');
-            if (statusEl) {
-                statusEl.textContent = status;
-                statusEl.className = state === 'loading'
-                    ? 'text-[10px] font-bold text-amber-600 animate-pulse'
-                    : state === 'success'
-                        ? 'text-[10px] font-bold text-emerald-600'
-                        : state === 'error'
-                            ? 'text-[10px] font-bold text-rose-600'
-                            : 'text-[10px] font-bold text-slate-500';
-            }
-            if (ageEl) ageEl.textContent = age || '-';
-            if (clothingEl) clothingEl.textContent = clothing || '-';
-            if (neatnessEl) neatnessEl.textContent = neatness || '-';
-            if (presentationEl) presentationEl.textContent = presentation || '-';
-        }
-
-        function updateCapturedPresentationOverlay(neatness, presentation, visible = true) {
-            if (capturedNeatnessOverlay) capturedNeatnessOverlay.textContent = `✨ Kerapian: ${neatness || '-'}`;
-            if (capturedPresentationOverlay) capturedPresentationOverlay.textContent = `📸 Kesiapan foto: ${presentation || '-'}`;
-            if (capturedPresentationBadge) capturedPresentationBadge.classList.toggle('hidden', !visible);
-        }
-
-        function getHumanConstructor() {
-            if (!window.Human) return null;
-            return window.Human.Human || window.Human;
-        }
-
-        async function loadAttendanceAiModels() {
-            if (ageAiEngine && clothingAiModel) return;
-            if (aiModelsLoadingPromise) return aiModelsLoadingPromise;
-
-            aiModelsLoadingPromise = (async () => {
-                let loadedAnyModel = Boolean(ageAiEngine || clothingAiModel);
-                const HumanConstructor = getHumanConstructor();
-                if (HumanConstructor && !ageAiEngine) {
-                    ageAiEngine = new HumanConstructor({
-                        backend: 'webgl',
-                        modelBasePath: 'https://cdn.jsdelivr.net/npm/@vladmandic/human@3.3.6/models/',
-                        cacheModels: true,
-                        debug: false,
-                        warmup: 'none',
-                        filter: { enabled: true, autoBrightness: true, return: false },
-                        face: {
-                            enabled: true,
-                            detector: { enabled: true, maxDetected: 1, rotation: false, minConfidence: 0.35 },
-                            mesh: { enabled: false },
-                            iris: { enabled: false },
-                            attention: { enabled: false },
-                            description: { enabled: true, minConfidence: 0.1 },
-                            emotion: { enabled: false },
-                            antispoof: { enabled: false },
-                            liveness: { enabled: false },
-                            gear: { enabled: false }
-                        },
-                        body: { enabled: false },
-                        hand: { enabled: false },
-                        object: { enabled: false },
-                        gesture: { enabled: false },
-                        segmentation: { enabled: false }
-                    });
-                    await ageAiEngine.load();
-                    loadedAnyModel = true;
-                }
-
-                if (window.mobilenet && !clothingAiModel) {
-                    clothingAiModel = await window.mobilenet.load({ version: 2, alpha: 0.5 });
-                    loadedAnyModel = true;
-                }
-
-                if (!loadedAnyModel) {
-                    throw new Error('Pustaka model AI tidak tersedia. Periksa koneksi internet atau kebijakan CDN.');
-                }
-            })().finally(() => {
-                aiModelsLoadingPromise = null;
-            });
-
-            return aiModelsLoadingPromise;
-        }
-
-        function createTorsoCrop(sourceCanvas) {
-            const crop = document.createElement('canvas');
-            crop.width = 224;
-            crop.height = 224;
-            const ctx = crop.getContext('2d', { willReadFrequently: true });
-            const sx = Math.round(sourceCanvas.width * 0.14);
-            const sy = Math.round(sourceCanvas.height * 0.34);
-            const sw = Math.round(sourceCanvas.width * 0.72);
-            const sh = Math.round(sourceCanvas.height * 0.62);
-            ctx.drawImage(sourceCanvas, sx, sy, sw, sh, 0, 0, crop.width, crop.height);
-            return crop;
-        }
-
-        function getDominantClothingColor(canvas) {
-            const ctx = canvas.getContext('2d', { willReadFrequently: true });
-            const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-            const palette = [
-                ['Hitam', 25, 25, 25], ['Putih', 235, 235, 235], ['Abu-abu', 130, 130, 130],
-                ['Merah', 190, 50, 50], ['Marun', 105, 30, 45], ['Oranye', 220, 120, 35],
-                ['Kuning', 220, 195, 55], ['Hijau', 55, 140, 75], ['Biru', 55, 105, 180],
-                ['Navy', 30, 55, 100], ['Ungu', 120, 65, 150], ['Cokelat', 120, 80, 50],
-                ['Krem', 210, 190, 150], ['Merah muda', 220, 135, 165]
-            ];
-            const scores = new Map(palette.map(item => [item[0], 0]));
-
-            for (let y = 0; y < canvas.height; y += 4) {
-                for (let x = 0; x < canvas.width; x += 4) {
-                    const i = (y * canvas.width + x) * 4;
-                    const pr = pixels[i], pg = pixels[i + 1], pb = pixels[i + 2], pa = pixels[i + 3];
-                    if (pa < 180) continue;
-                    const skinLike = pr > 85 && pg > 40 && pb > 20 && pr > pg && pg > pb && (pr - pg) > 10 && (pr - pb) > 15;
-                    if (skinLike) continue;
-
-                    let best = palette[0], bestDistance = Infinity;
-                    palette.forEach(item => {
-                        const distance = Math.pow(pr - item[1], 2) + Math.pow(pg - item[2], 2) + Math.pow(pb - item[3], 2);
-                        if (distance < bestDistance) { bestDistance = distance; best = item; }
-                    });
-
-                    const centerX = Math.abs((x / canvas.width) - 0.5);
-                    const centerY = Math.abs((y / canvas.height) - 0.5);
-                    const centerWeight = centerX < 0.28 && centerY < 0.36 ? 2.2 : 1;
-                    scores.set(best[0], (scores.get(best[0]) || 0) + centerWeight);
-                }
-            }
-
-            return Array.from(scores.entries()).sort((a, b) => b[1] - a[1])[0]?.[0] || 'Netral';
-        }
-
-        function mapMobileNetToClothing(predictions, dominantColor) {
-            const rules = [
-                [/lab coat/i, 'Jas laboratorium'],
-                [/military uniform|academic gown/i, 'Seragam'],
-                [/suit|Windsor tie|bow tie/i, 'Pakaian formal / jas'],
-                [/jersey|T-shirt|tee shirt/i, 'Kaos / jersey'],
-                [/sweatshirt|cardigan|sweater/i, 'Sweater / kardigan'],
-                [/trench coat|overcoat|cloak|poncho|vest|bulletproof vest/i, 'Jaket / pakaian luar'],
-                [/apron/i, 'Celemek'],
-                [/pajama/i, 'Piyama'],
-                [/maillot|swimming trunks/i, 'Pakaian olahraga'],
-                [/kimono/i, 'Kimono'],
-                [/gown|abaya/i, 'Gaun / pakaian panjang'],
-                [/miniskirt|skirt/i, 'Rok']
-            ];
-
-            for (const prediction of predictions || []) {
-                for (const [regex, label] of rules) {
-                    if (regex.test(prediction.className || '')) {
-                        return {
-                            label: `${label} warna ${dominantColor}`,
-                            confidence: Math.round((prediction.probability || 0) * 100)
-                        };
-                    }
-                }
-            }
-
-            const topProbability = predictions && predictions[0] ? predictions[0].probability : 0;
-            return {
-                label: `Atasan warna ${dominantColor}`,
-                confidence: Math.max(35, Math.round((topProbability || 0.35) * 100))
-            };
-        }
-
-        function getPhotoPresentationMetrics(sourceCanvas, landmarks = []) {
-            const sample = document.createElement('canvas');
-            sample.width = 160;
-            sample.height = 120;
-            const ctx = sample.getContext('2d', { willReadFrequently: true });
-            ctx.drawImage(sourceCanvas, 0, 0, sample.width, sample.height);
-            const pixels = ctx.getImageData(0, 0, sample.width, sample.height).data;
-            const luminance = new Float32Array(sample.width * sample.height);
-            let sum = 0;
-            let sumSq = 0;
-
-            for (let i = 0, p = 0; i < pixels.length; i += 4, p++) {
-                const value = (0.2126 * pixels[i]) + (0.7152 * pixels[i + 1]) + (0.0722 * pixels[i + 2]);
-                luminance[p] = value;
-                sum += value;
-                sumSq += value * value;
-            }
-
-            const count = luminance.length || 1;
-            const brightness = sum / count;
-            const variance = Math.max(0, (sumSq / count) - (brightness * brightness));
-            const contrast = Math.sqrt(variance);
-            let edgeTotal = 0;
-            let edgeCount = 0;
-
-            for (let y = 1; y < sample.height; y++) {
-                for (let x = 1; x < sample.width; x++) {
-                    const idx = (y * sample.width) + x;
-                    edgeTotal += Math.abs(luminance[idx] - luminance[idx - 1]);
-                    edgeTotal += Math.abs(luminance[idx] - luminance[idx - sample.width]);
-                    edgeCount += 2;
-                }
-            }
-
-            const sharpness = edgeCount ? edgeTotal / edgeCount : 0;
-            let faceCentered = true;
-            let faceSizeGood = true;
-
-            if (Array.isArray(landmarks) && landmarks.length > 20) {
-                const xs = landmarks.map(point => Number(point.x)).filter(Number.isFinite);
-                const ys = landmarks.map(point => Number(point.y)).filter(Number.isFinite);
-                if (xs.length && ys.length) {
-                    const minX = Math.min(...xs), maxX = Math.max(...xs);
-                    const minY = Math.min(...ys), maxY = Math.max(...ys);
-                    const centerX = (minX + maxX) / 2;
-                    const centerY = (minY + maxY) / 2;
-                    const faceWidth = maxX - minX;
-                    faceCentered = centerX >= 0.30 && centerX <= 0.70 && centerY >= 0.23 && centerY <= 0.67;
-                    faceSizeGood = faceWidth >= 0.18 && faceWidth <= 0.62;
-                }
-            }
-
-            return {
-                brightness,
-                contrast,
-                sharpness,
-                brightnessGood: brightness >= 58 && brightness <= 210,
-                contrastGood: contrast >= 28,
-                sharpnessGood: sharpness >= 7.5,
-                faceCentered,
-                faceSizeGood
-            };
-        }
-
-        function assessPhotoPresentation(sourceCanvas, expression, clothingLabel, landmarks = []) {
-            const metrics = getPhotoPresentationMetrics(sourceCanvas, landmarks);
-            let score = 0;
-            if (metrics.brightnessGood) score += 1;
-            if (metrics.contrastGood) score += 1;
-            if (metrics.sharpnessGood) score += 1;
-            if (metrics.faceCentered) score += 1;
-            if (metrics.faceSizeGood) score += 1;
-            if (/seragam|formal|jas|kemeja|atasan|sweater|kardigan|jaket|gaun|kimono/i.test(clothingLabel || '')) score += 1;
-            if (/piyama|renang/i.test(clothingLabel || '')) score -= 1;
-
-            const neatness = score >= 5 ? 'Rapi' : score >= 3 ? 'Cukup rapi' : 'Perlu dirapikan';
-            const photoQualityScore = [metrics.brightnessGood, metrics.contrastGood, metrics.sharpnessGood, metrics.faceCentered, metrics.faceSizeGood]
-                .filter(Boolean).length;
-
-            let presentation = 'Baik dan siap digunakan';
-            if (photoQualityScore < 3) {
-                if (!metrics.brightnessGood) presentation = 'Perlu perbaikan pencahayaan';
-                else if (!metrics.sharpnessGood) presentation = 'Perlu foto lebih tajam';
-                else if (!metrics.faceCentered || !metrics.faceSizeGood) presentation = 'Perlu perbaikan posisi wajah';
-                else presentation = 'Perlu diperbaiki';
-            } else if (photoQualityScore === 3) {
-                presentation = 'Cukup baik';
-            } else if (/Gembira|Tersenyum/i.test(expression || '')) {
-                presentation = 'Baik, jelas, dan ramah';
-            }
-
-            return {
-                neatness,
-                presentation,
-                confidence: Math.max(40, Math.min(100, Math.round(((score + 1) / 7) * 100))),
-                metrics
-            };
-        }
-
-        async function analyzeCapturedAttendancePhoto(sourceCanvas) {
-            isAiAnalyzing = true;
-            capturedPredictedAge = 'Menganalisis...';
-            capturedPredictedClothing = 'Menganalisis...';
-            capturedPredictedNeatness = 'Menganalisis...';
-            capturedPhotoPresentation = 'Menganalisis...';
-            capturedAiConfidence = '';
-            setAiAnalysisPanel('Memuat model AI...', capturedPredictedAge, capturedPredictedClothing, 'loading', capturedPredictedNeatness, capturedPhotoPresentation);
-            updateCapturedPresentationOverlay(capturedPredictedNeatness, capturedPhotoPresentation, true);
-            updatePresensiButtonState();
-
-            const torsoCanvas = createTorsoCrop(sourceCanvas);
-            let ageText = 'Tidak terdeteksi';
-            let clothingText = `Atasan warna ${getDominantClothingColor(torsoCanvas)}`;
-            let clothingConfidence = '';
-
-            try {
-                await loadAttendanceAiModels();
-                setAiAnalysisPanel('Menganalisis foto...', 'Menganalisis...', 'Menganalisis...', 'loading', 'Menganalisis...', 'Menganalisis...');
-
-                if (ageAiEngine) {
-                    const ageResult = await ageAiEngine.detect(sourceCanvas);
-                    const detectedAge = ageResult && ageResult.face && ageResult.face[0] ? Number(ageResult.face[0].age) : NaN;
-                    if (Number.isFinite(detectedAge)) ageText = `±${Math.max(1, Math.round(detectedAge))} tahun`;
-                }
-
-                if (clothingAiModel) {
-                    const predictions = await clothingAiModel.classify(torsoCanvas, 5);
-                    const clothing = mapMobileNetToClothing(predictions, getDominantClothingColor(torsoCanvas));
-                    clothingText = clothing.label;
-                    clothingConfidence = `Pakaian ${clothing.confidence}%`;
-                }
-
-                const presentationResult = assessPhotoPresentation(
-                    sourceCanvas,
-                    capturedFaceExpression || globalFaceExpression,
-                    clothingText,
-                    capturedFaceLandmarks
-                );
-
-                capturedPredictedAge = ageText;
-                capturedPredictedClothing = clothingText;
-                capturedPredictedNeatness = presentationResult.neatness;
-                capturedPhotoPresentation = presentationResult.presentation;
-                capturedAiConfidence = [clothingConfidence, `Kualitas tampilan ${presentationResult.confidence}%`].filter(Boolean).join(' | ');
-                setAiAnalysisPanel('Analisis selesai', ageText, clothingText, 'success', capturedPredictedNeatness, capturedPhotoPresentation);
-                updateCapturedPresentationOverlay(capturedPredictedNeatness, capturedPhotoPresentation, true);
-                showToast(`AI: umur ${ageText}, pakaian ${clothingText}, kerapian ${capturedPredictedNeatness}.`, 'success');
-            } catch (error) {
-                console.warn('Analisis AI foto tidak lengkap:', error);
-                const presentationResult = assessPhotoPresentation(
-                    sourceCanvas,
-                    capturedFaceExpression || globalFaceExpression,
-                    clothingText,
-                    capturedFaceLandmarks
-                );
-                capturedPredictedAge = ageText;
-                capturedPredictedClothing = clothingText;
-                capturedPredictedNeatness = presentationResult.neatness;
-                capturedPhotoPresentation = presentationResult.presentation;
-                capturedAiConfidence = `Mode analisis visual lokal | Kualitas tampilan ${presentationResult.confidence}%`;
-                setAiAnalysisPanel('Analisis terbatas', ageText, clothingText, 'error', capturedPredictedNeatness, capturedPhotoPresentation);
-                updateCapturedPresentationOverlay(capturedPredictedNeatness, capturedPhotoPresentation, true);
-                showToast('Model AI umur tidak dapat dimuat. Kerapian dan kesiapan foto tetap dinilai secara lokal.', 'info');
-            } finally {
-                isAiAnalyzing = false;
-                updatePresensiButtonState();
-            }
-        }
-
         function clearCapturedPhoto(showMessage = false) {
             globalBase64Photo = '';
             capturedPhotoTakenAt = null;
             capturedFaceExpression = '';
-            capturedPredictedAge = 'Belum dianalisis';
-            capturedPredictedClothing = 'Belum dianalisis';
-            capturedPredictedNeatness = 'Belum dianalisis';
-            capturedPhotoPresentation = 'Belum dianalisis';
-            capturedAiConfidence = '';
-            capturedFaceLandmarks = [];
-            isAiAnalyzing = false;
-            setAiAnalysisPanel('Belum dianalisis', '-', '-', 'idle', '-', '-');
-            updateCapturedPresentationOverlay('-', '-', false);
             if (cameraActive && isFaceDetected) {
                 updateFaceExpressionDisplay(globalFaceExpression, true);
             }
@@ -2194,7 +1675,7 @@ function formatTanggalRekap(value){
             if (showMessage) showToast('Foto dibatalkan. Silakan ambil foto kembali.', 'info');
         }
 
-        async function captureAttendancePhoto() {
+        function captureAttendancePhoto() {
             const selectedTipe = document.querySelector('input[name="tipe_absen"]:checked')?.value || 'Masuk';
 
             if (checkTodayAttendanceStatus()) {
@@ -2223,7 +1704,6 @@ function formatTanggalRekap(value){
             globalBase64Photo = finalCanvas.toDataURL('image/jpeg', 0.85);
             capturedPhotoTakenAt = new Date();
             capturedFaceExpression = globalFaceExpression || "Netral";
-            capturedFaceLandmarks = latestFaceLandmarks.map(point => ({ ...point }));
             updateFaceExpressionDisplay(`${capturedFaceExpression} (tersimpan bersama foto)`, true);
 
             if (capturedPhotoOverlay) {
@@ -2236,7 +1716,6 @@ function formatTanggalRekap(value){
             faceMeshStatusBadge.innerHTML = '<i class="fa-solid fa-camera"></i> Foto Berhasil Diambil';
             showToast(`Foto berhasil diambil. Ekspresi: ${capturedFaceExpression}.`, 'success');
             updatePresensiButtonState();
-            await analyzeCapturedAttendancePhoto(finalCanvas);
         }
 
         function syncAttendanceTypeButtons(hasMasuk = false, hasPulang = false) {
@@ -2334,13 +1813,6 @@ function formatTanggalRekap(value){
                 capturePhotoBtn.innerHTML = '<i class="fa-solid fa-lock"></i> Menunggu Wajah';
             }
 
-            if (isAiAnalyzing) {
-                submitPresensiBtn.disabled = true;
-                submitPresensiBtn.className = 'w-full bg-sky-100 text-sky-700 py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 cursor-wait border border-sky-200';
-                submitPresensiBtn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles animate-pulse"></i> Menganalisis Foto & Kerapian';
-                return;
-            }
-
             if (globalBase64Photo) {
                 submitPresensiBtn.disabled = false;
                 submitPresensiBtn.className = 'w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer';
@@ -2370,10 +1842,6 @@ function formatTanggalRekap(value){
 
             if (!globalBase64Photo) {
                 showToast("Silakan ambil foto terlebih dahulu sebelum mengirim absen.", "error");
-                return;
-            }
-            if (isAiAnalyzing) {
-                showToast("Analisis AI foto dan kerapian masih berlangsung.", "info");
                 return;
             }
 
@@ -2409,37 +1877,16 @@ function formatTanggalRekap(value){
                     nip: currentSession.nip,
                     nama: currentSession.nama,
                     tipe: tipeVal,
-                    // Metadata AI juga ditambahkan ke keterangan agar tetap terbaca pada backend lama.
-                    keterangan: `${ketVal} | Ekspresi: ${ekspresiVal} | Prediksi Umur: ${capturedPredictedAge} | Prediksi Pakaian: ${capturedPredictedClothing} | Kerapian Tampilan: ${capturedPredictedNeatness} | Kesiapan Foto: ${capturedPhotoPresentation}`,
+                    // Ekspresi juga ditambahkan ke keterangan agar tetap tersimpan pada backend lama.
+                    keterangan: `${ketVal} | Ekspresi: ${ekspresiVal}`,
                     status_keterangan: ketVal,
                     ekspresi: ekspresiVal,
-                    prediksi_umur: capturedPredictedAge,
-                    prediksi_pakaian: capturedPredictedClothing,
-                    prediksi_kerapian: capturedPredictedNeatness,
-                    kualitas_tampilan: capturedPhotoPresentation,
-                    ai_confidence: capturedAiConfidence,
                     lokasi: globalCoordinates, // Lokasi GPS Perangkat Guru (Lat, Lng)
                     jarak: globalDistance,      // Jarak ke sekolah
                     nama_lokasi: selectedSchoolName, // Nama cabang sekolah terpilih
                     link_map: globalMapsLink,   // Link peta Google Maps koordinat perangkat guru
                     foto: base64Photo
                 };
-
-                // Simpan metadata AI di perangkat sebagai cadangan ketika endpoint
-                // Google Apps Script lama belum mengembalikan kolom AI pada daftar harian.
-                saveAttendanceAiMeta({
-                    nip: payload.nip,
-                    nama: payload.nama,
-                    tanggal: todayDateStr,
-                    tipe: payload.tipe
-                }, {
-                    age: payload.prediksi_umur,
-                    clothing: payload.prediksi_pakaian,
-                    neatness: payload.prediksi_kerapian,
-                    presentation: payload.kualitas_tampilan,
-                    confidence: payload.ai_confidence,
-                    expression: payload.ekspresi
-                });
 
                 submitPresensiBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Mengirim Data...`;
 
@@ -2470,11 +1917,6 @@ checkTodayAttendanceStatus();
                             tipe: payload.tipe,
                             keterangan: payload.keterangan,
                             ekspresi: payload.ekspresi,
-                            prediksi_umur: payload.prediksi_umur,
-                            prediksi_pakaian: payload.prediksi_pakaian,
-                            prediksi_kerapian: payload.prediksi_kerapian,
-                            kualitas_tampilan: payload.kualitas_tampilan,
-                            ai_confidence: payload.ai_confidence,
                             lokasi: payload.lokasi,
                             jarak: payload.jarak,
                             nama_lokasi: payload.nama_lokasi,
@@ -2515,11 +1957,6 @@ checkTodayAttendanceStatus();
                                 tipe: payload.tipe,
                                 keterangan: payload.keterangan,
                                 ekspresi: payload.ekspresi,
-                                prediksi_umur: payload.prediksi_umur,
-                                prediksi_pakaian: payload.prediksi_pakaian,
-                                prediksi_kerapian: payload.prediksi_kerapian,
-                                kualitas_tampilan: payload.kualitas_tampilan,
-                                ai_confidence: payload.ai_confidence,
                                 lokasi: payload.lokasi,
                                 jarak: payload.jarak,
                                 nama_lokasi: payload.nama_lokasi,
@@ -2870,18 +2307,16 @@ checkTodayAttendanceStatus();
                     ? `<span class="px-2.5 py-1 text-xs font-bold rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-100"><i class="fa-solid fa-right-to-bracket"></i> ${r.tipe}</span>`
                     : `<span class="px-2.5 py-1 text-xs font-bold rounded-lg bg-rose-50 text-rose-700 border border-rose-100"><i class="fa-solid fa-right-from-bracket"></i> ${r.tipe}</span>`;
 
-                const aiMeta = extractAttendanceAiMeta(r);
                 const fotoLink = r.foto_link || "";
                 const fotoPreviewUrl = normalizePhotoUrl(fotoLink);
                 const previewFoto = fotoPreviewUrl
-                    ? `<a href="${fotoLink || fotoPreviewUrl}" target="_blank" rel="noopener" class="relative inline-block" title="Buka foto ukuran penuh">
+                    ? `<a href="${fotoLink || fotoPreviewUrl}" target="_blank" rel="noopener" class="inline-block" title="Buka foto ukuran penuh">
                            <img src="${fotoPreviewUrl}"
                                 alt="Foto presensi ${r.nama || ''}"
                                 class="w-24 h-20 object-contain bg-slate-100 rounded-lg border border-slate-200 shadow-sm cursor-pointer hover:scale-105 transition-all"
                                 loading="lazy"
                                 referrerpolicy="no-referrer"
                                 onerror="handlePhotoError(this)">
-                           <span class="absolute left-1 right-1 bottom-1 rounded bg-slate-950/75 text-white text-[8px] font-bold px-1 py-0.5 text-center leading-tight">✨ ${escapeHtml(aiMeta.neatness)}</span>
                        </a>`
                     : `<div class="w-24 h-20 rounded-lg border border-dashed border-slate-300 bg-slate-50 flex items-center justify-center text-[10px] text-slate-400 text-center px-2">Foto tidak tersedia</div>`;
 
@@ -2910,13 +2345,7 @@ checkTodayAttendanceStatus();
                         ${mapLinkDisplay}
                     </td>
                     <td class="py-4 px-6">
-                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">${escapeHtml(aiMeta.status || '-')}</span>
-                        <div class="mt-2 space-y-1">
-                            <div class="text-[10px] font-semibold text-sky-700 bg-sky-50 border border-sky-100 rounded-lg px-2 py-1">🧠 Umur: ${escapeHtml(aiMeta.age)}</div>
-                            <div class="text-[10px] font-semibold text-fuchsia-700 bg-fuchsia-50 border border-fuchsia-100 rounded-lg px-2 py-1">👕 Pakaian: ${escapeHtml(aiMeta.clothing)}</div>
-                            <div class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg px-2 py-1">✨ Kerapian: ${escapeHtml(aiMeta.neatness)}</div>
-                            <div class="text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-2 py-1">📸 Kesiapan foto: ${escapeHtml(aiMeta.presentation)}</div>
-                        </div>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">${r.keterangan}</span>
                     </td>
                     <td class="py-4 px-6">${previewFoto}</td>
                 `;
@@ -3005,11 +2434,10 @@ function applyDateFilters() {
             }
 
             let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "NIP,Nama Guru,Tanggal,Waktu,Tipe Presensi,Status Keterangan,Prediksi Umur AI,Prediksi Pakaian AI,Kerapian Tampilan AI,Kesiapan Foto AI,Koordinat GPS Perangkat,Jarak (Meter),Lokasi Cabang,Link Google Maps,Link Foto\r\n";
+            csvContent += "NIP,Nama Guru,Tanggal,Waktu,Tipe Presensi,Status Keterangan,Koordinat GPS Perangkat,Jarak (Meter),Lokasi Cabang,Link Google Maps,Link Foto\r\n";
 
             mockAttendanceDb.forEach(row => {
-                const aiMeta = extractAttendanceAiMeta(row);
-                const line = `"${row.nip}","${row.nama}","${row.tanggal}","${row.jam}","${row.tipe}","${aiMeta.status}","${aiMeta.age}","${aiMeta.clothing}","${aiMeta.neatness}","${aiMeta.presentation}","${row.lokasi}","${row.jarak}","${row.nama_lokasi}","${row.link_map}","${row.foto_link}"`;
+                const line = `"${row.nip}","${row.nama}","${row.tanggal}","${row.jam}","${row.tipe}","${row.keterangan}","${row.lokasi}","${row.jarak}","${row.nama_lokasi}","${row.link_map}","${row.foto_link}"`;
                 csvContent += line + "\r\n";
             });
 
@@ -3846,45 +3274,6 @@ function renderFaceExpressionPreview(expression, detected = true){
     caption.className = 'text-[10px] font-bold text-violet-700 text-center';
 }
 
-function extractAttendanceAiMeta(record){
-    const item = enrichAttendanceRecordWithFullData(record || {});
-    const note = String(item.keterangan || item.status_keterangan || '').trim();
-    const ageMatch = note.match(/(?:Prediksi\s*)?Umur(?:\s*AI)?\s*:\s*([^|]+)/i);
-    const clothingMatch = note.match(/(?:Prediksi\s*)?Pakaian(?:\s*AI)?\s*:\s*([^|]+)/i);
-    const neatnessMatch = note.match(/(?:Prediksi\s*)?Kerapian(?:\s*Tampilan)?(?:\s*AI)?\s*:\s*([^|]+)/i);
-    const presentationMatch = note.match(/(?:Kesiapan\s*Foto|Kualitas\s*Tampilan)(?:\s*AI)?\s*:\s*([^|]+)/i);
-    const expressionMatch = note.match(/Ekspresi\s*:\s*([^|]+)/i);
-    const cleanStatus = note
-        .replace(/\s*\|?\s*Ekspresi\s*:\s*[^|]*/ig, '')
-        .replace(/\s*\|?\s*(?:Prediksi\s*)?Umur(?:\s*AI)?\s*:\s*[^|]*/ig, '')
-        .replace(/\s*\|?\s*(?:Prediksi\s*)?Pakaian(?:\s*AI)?\s*:\s*[^|]*/ig, '')
-        .replace(/\s*\|?\s*(?:Prediksi\s*)?Kerapian(?:\s*Tampilan)?(?:\s*AI)?\s*:\s*[^|]*/ig, '')
-        .replace(/\s*\|?\s*(?:Kesiapan\s*Foto|Kualitas\s*Tampilan)(?:\s*AI)?\s*:\s*[^|]*/ig, '')
-        .replace(/^\s*\|\s*|\s*\|\s*$/g, '')
-        .trim();
-
-    const cached = getCachedAttendanceAiMeta(item) || {};
-    const directAge = item.prediksi_umur || item.umur_prediksi || item.predicted_age || (ageMatch ? ageMatch[1].trim() : '');
-    const directClothing = item.prediksi_pakaian || item.pakaian_prediksi || item.predicted_clothing || (clothingMatch ? clothingMatch[1].trim() : '');
-    const directNeatness = item.prediksi_kerapian || item.kerapian_tampilan || item.predicted_neatness || (neatnessMatch ? neatnessMatch[1].trim() : '');
-    const directPresentation = item.kualitas_tampilan || item.kesiapan_foto || item.photo_presentation || (presentationMatch ? presentationMatch[1].trim() : '');
-
-    const invalidValues = /^(?:-|belum\s*(?:tersedia|dianalisis)|menganalisis\.\.\.)$/i;
-    const age = directAge && !invalidValues.test(String(directAge).trim()) ? directAge : cached.age;
-    const clothing = directClothing && !invalidValues.test(String(directClothing).trim()) ? directClothing : cached.clothing;
-    const neatness = directNeatness && !invalidValues.test(String(directNeatness).trim()) ? directNeatness : cached.neatness;
-    const presentation = directPresentation && !invalidValues.test(String(directPresentation).trim()) ? directPresentation : cached.presentation;
-
-    return {
-        status: item.status_keterangan || cleanStatus || 'Hadir',
-        expression: item.ekspresi || (expressionMatch ? expressionMatch[1].trim() : '') || cached.expression || '',
-        age: age || 'Data AI tidak tersimpan',
-        clothing: clothing || 'Data AI tidak tersimpan',
-        neatness: neatness || 'Data AI tidak tersimpan',
-        presentation: presentation || 'Data AI tidak tersimpan'
-    };
-}
-
 function loadPresensiHariIni(){
 
     const masukBox = document.getElementById("list-presensi-masuk");
@@ -3944,12 +3333,12 @@ function loadPresensiHariIni(){
         const masukHariIni = sortAttendanceEarliestFirst(
             Array.from(data.masuk || []).filter(p =>
                 !p.tanggal || normalizeDateToDDMMYYYY(p.tanggal) === todayStr
-            ).map(p => enrichAttendanceRecordWithFullData({ ...p, tipe: p.tipe || 'Masuk' }))
+            )
         );
         const pulangHariIni = sortAttendanceEarliestFirst(
             Array.from(data.pulang || []).filter(p =>
                 !p.tanggal || normalizeDateToDDMMYYYY(p.tanggal) === todayStr
-            ).map(p => enrichAttendanceRecordWithFullData({ ...p, tipe: p.tipe || 'Pulang' }))
+            )
         );
 
         total.innerHTML = `Masuk ${masukHariIni.length} | Pulang ${pulangHariIni.length}`;
@@ -3962,18 +3351,16 @@ function loadPresensiHariIni(){
                 ? "bg-emerald-50 text-emerald-700 border-emerald-100"
                 : "bg-blue-50 text-blue-700 border-blue-100";
             const expression = getAttendanceExpression(p);
-            const aiMeta = extractAttendanceAiMeta(p);
 
             return `
             <div class="bg-white border border-slate-200 rounded-xl p-3 flex gap-3 shadow-sm min-w-0">
-                <div class="relative w-20 h-20 shrink-0 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 flex items-center justify-center">
+                <div class="w-20 h-20 shrink-0 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 flex items-center justify-center">
                     <img src="${photoUrl || 'https://placehold.co/320x240/e2e8f0/64748b?text=Tanpa+Foto'}"
                          alt="Foto presensi ${p.nama || ''}"
                          class="w-full h-full object-contain"
                          loading="lazy"
                          referrerpolicy="no-referrer"
                          onerror="handlePhotoError(this)">
-                    <div class="absolute left-1 right-1 bottom-1 rounded bg-slate-950/75 text-white text-[8px] font-bold px-1 py-0.5 text-center leading-tight">✨ ${escapeHtml(aiMeta.neatness)}</div>
                 </div>
 
                 <div class="text-xs min-w-0 flex-1">
@@ -4008,13 +3395,6 @@ function loadPresensiHariIni(){
                         <div class="min-w-0 text-violet-700 font-semibold break-words leading-tight">
                             ${getExpressionIcon(expression)} Ekspresi: ${escapeHtml(expression)}
                         </div>
-                    </div>
-
-                    <div class="mt-2 rounded-xl bg-sky-50 border border-sky-100 p-2 space-y-1">
-                        <div class="text-sky-800 font-semibold break-words leading-tight">🧠 Prediksi umur: ${escapeHtml(aiMeta.age)}</div>
-                        <div class="text-fuchsia-800 font-semibold break-words leading-tight">👕 Prediksi pakaian: ${escapeHtml(aiMeta.clothing)}</div>
-                        <div class="text-emerald-800 font-semibold break-words leading-tight">✨ Kerapian tampilan: ${escapeHtml(aiMeta.neatness)}</div>
-                        <div class="text-amber-800 font-semibold break-words leading-tight">📸 Kesiapan foto: ${escapeHtml(aiMeta.presentation)}</div>
                     </div>
                 </div>
             </div>`;
