@@ -151,6 +151,29 @@
                     </div>
                 </div>
             </div>
+
+            <!-- GURU BELUM PRESENSI -->
+            <div class="mt-6 pt-5 border-t border-slate-100">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                    <div>
+                        <h3 class="text-sm font-bold text-amber-700 flex items-center gap-2">
+                            <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 inline-flex items-center justify-center">
+                                <i class="fa-solid fa-user-clock"></i>
+                            </span>
+                            GURU BELUM PRESENSI
+                        </h3>
+                        <p class="text-[11px] text-slate-500 mt-1 sm:ml-10">Guru/pegawai yang belum melakukan absen masuk hari ini</p>
+                    </div>
+                    <span id="jumlah-guru-belum-presensi" class="self-start sm:self-auto shrink-0 text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-full">Memuat...</span>
+                </div>
+
+                <div id="list-guru-belum-presensi" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div class="sm:col-span-2 lg:col-span-3 text-xs text-slate-400 flex items-center gap-2 py-2">
+                        <i class="fa-solid fa-spinner animate-spin text-amber-500"></i>
+                        Memuat daftar guru...
+                    </div>
+                </div>
+            </div>
         </div>
 
 
@@ -782,6 +805,9 @@
         let adminReportSummaryRows = [];
         let adminReportDetailRows = [];
         let adminReportPeriodLabel = "";
+        let loginPublicUsersCache = [];
+        let loginPublicUsersFetchedAt = 0;
+        const LOGIN_PUBLIC_USERS_CACHE_MS = 60000;
 
         // Titik Koordinat Sekolah yang Sedang Terpilih
         let selectedSchoolLat = -7.766140;
@@ -3274,6 +3300,109 @@ function renderFaceExpressionPreview(expression, detected = true){
     caption.className = 'text-[10px] font-bold text-violet-700 text-center';
 }
 
+// Mengambil daftar guru untuk panel publik halaman awal.
+// Data sensitif seperti password sengaja tidak disimpan ke cache frontend.
+async function getSafeUsersForLoginPage(forceRefresh = false){
+    const now = Date.now();
+    if (!forceRefresh && loginPublicUsersCache.length && (now - loginPublicUsersFetchedAt) < LOGIN_PUBLIC_USERS_CACHE_MS) {
+        return loginPublicUsersCache;
+    }
+
+    const response = await fetch(`${GAS_URL}?action=getUsers&_=${now}`, { cache: "no-store" });
+    const data = await response.json();
+    if (!data || !data.success) throw new Error(data?.message || "Daftar guru gagal dimuat");
+
+    loginPublicUsersCache = Array.from(data.users || []).map(user => ({
+        nama: String(user.nama || "").trim(),
+        nip: String(user.nip || "").trim(),
+        role: String(user.role || "").trim()
+    }));
+    loginPublicUsersFetchedAt = now;
+    return loginPublicUsersCache;
+}
+
+function normalizeIdentityText(value){
+    return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, " ");
+}
+
+async function renderGuruBelumPresensi(masukHariIni){
+    const listEl = document.getElementById("list-guru-belum-presensi");
+    const countEl = document.getElementById("jumlah-guru-belum-presensi");
+    if (!listEl || !countEl) return;
+
+    try {
+        const users = await getSafeUsersForLoginPage();
+        const guruAktif = users
+            .filter(user => normalizeIdentityText(user.role) !== "admin")
+            .filter(user => user.nama || user.nip);
+
+        const nipSudahMasuk = new Set(
+            Array.from(masukHariIni || [])
+                .map(item => String(item?.nip || "").trim())
+                .filter(Boolean)
+        );
+        const namaSudahMasuk = new Set(
+            Array.from(masukHariIni || [])
+                .map(item => normalizeIdentityText(item?.nama))
+                .filter(Boolean)
+        );
+
+        const belumPresensi = guruAktif
+            .filter(user => {
+                const nip = String(user.nip || "").trim();
+                const nama = normalizeIdentityText(user.nama);
+                const sudahMasuk = (nip && nipSudahMasuk.has(nip)) || (nama && namaSudahMasuk.has(nama));
+                return !sudahMasuk;
+            })
+            .sort((a, b) => String(a.nama || "").localeCompare(String(b.nama || ""), "id", { sensitivity: "base" }));
+
+        countEl.textContent = `${belumPresensi.length} Guru`;
+        countEl.className = belumPresensi.length
+            ? "self-start sm:self-auto shrink-0 text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-full"
+            : "self-start sm:self-auto shrink-0 text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-full";
+
+        if (!belumPresensi.length) {
+            listEl.innerHTML = `
+                <div class="sm:col-span-2 lg:col-span-3 rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-4 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm font-bold text-emerald-800">Semua guru sudah presensi masuk</div>
+                        <div class="text-[11px] text-emerald-700/80 mt-0.5">Tidak ada guru yang berstatus belum presensi hari ini.</div>
+                    </div>
+                </div>`;
+            return;
+        }
+
+        listEl.innerHTML = belumPresensi.map((guru, index) => `
+            <div class="rounded-2xl border border-amber-100 bg-gradient-to-br from-amber-50/80 to-white p-3.5 flex items-start gap-3 shadow-sm min-w-0">
+                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 font-extrabold text-xs">
+                    ${String(index + 1).padStart(2, "0")}
+                </div>
+                <div class="min-w-0 flex-1">
+                    <div class="text-xs font-bold text-slate-800 break-words">${escapeHtml(guru.nama || "Tanpa Nama")}</div>
+                    <div class="text-[10px] text-slate-500 mt-1 break-all">NIP: ${escapeHtml(guru.nip || "-")}</div>
+                    <span class="inline-flex items-center gap-1 mt-2 px-2 py-1 rounded-full border border-amber-200 bg-white text-[9px] font-bold text-amber-700">
+                        <i class="fa-solid fa-clock"></i> Belum Absen Masuk
+                    </span>
+                </div>
+            </div>`).join("");
+    } catch (error) {
+        console.error("Gagal memuat guru belum presensi:", error);
+        countEl.textContent = "Gagal dimuat";
+        countEl.className = "self-start sm:self-auto shrink-0 text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 px-3 py-1.5 rounded-full";
+        listEl.innerHTML = `
+            <div class="sm:col-span-2 lg:col-span-3 rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 text-xs text-rose-700">
+                <i class="fa-solid fa-triangle-exclamation mr-1"></i>
+                Daftar guru belum presensi tidak dapat dimuat. Pastikan action <b>getUsers</b> pada Google Apps Script dapat diakses.
+            </div>`;
+    }
+}
+
 function loadPresensiHariIni(){
 
     const masukBox = document.getElementById("list-presensi-masuk");
@@ -3295,6 +3424,10 @@ function loadPresensiHariIni(){
             total.innerHTML = '0 Hadir';
             if (jumlahMasukEl) jumlahMasukEl.textContent = '0 Data';
             if (jumlahPulangEl) jumlahPulangEl.textContent = '0 Data';
+            const belumList = document.getElementById("list-guru-belum-presensi");
+            const belumCount = document.getElementById("jumlah-guru-belum-presensi");
+            if (belumCount) belumCount.textContent = "Tidak tersedia";
+            if (belumList) belumList.innerHTML = '<div class="sm:col-span-2 lg:col-span-3 text-xs text-rose-500">Status belum presensi tidak dapat dihitung karena data presensi gagal dimuat.</div>';
             return;
         }
 
@@ -3406,6 +3539,9 @@ function loadPresensiHariIni(){
         pulangBox.innerHTML = pulangHariIni.map(p => card(p, "Pulang")).join("") ||
             '<div class="text-xs text-slate-400">Belum ada absen pulang hari ini</div>';
 
+        // Bandingkan daftar guru aktif dengan data absen Masuk hari ini.
+        renderGuruBelumPresensi(masukHariIni);
+
     })
     .catch(err => {
         console.error("Gagal memuat presensi hari ini:", err);
@@ -3413,6 +3549,10 @@ function loadPresensiHariIni(){
         pulangBox.innerHTML = '<div class="text-xs text-rose-500">Koneksi ke server gagal</div>';
         if (jumlahMasukEl) jumlahMasukEl.textContent = '0 Data';
         if (jumlahPulangEl) jumlahPulangEl.textContent = '0 Data';
+        const belumList = document.getElementById("list-guru-belum-presensi");
+        const belumCount = document.getElementById("jumlah-guru-belum-presensi");
+        if (belumCount) belumCount.textContent = "Koneksi gagal";
+        if (belumList) belumList.innerHTML = '<div class="sm:col-span-2 lg:col-span-3 text-xs text-rose-500">Koneksi ke server gagal. Data guru belum presensi belum dapat ditampilkan.</div>';
     });
 
 }
