@@ -151,29 +151,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- GURU BELUM PRESENSI -->
-            <div class="mt-6 pt-5 border-t border-slate-100">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                    <div>
-                        <h3 class="text-sm font-bold text-amber-700 flex items-center gap-2">
-                            <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 inline-flex items-center justify-center">
-                                <i class="fa-solid fa-user-clock"></i>
-                            </span>
-                            GURU BELUM PRESENSI
-                        </h3>
-                        <p class="text-[11px] text-slate-500 mt-1 sm:ml-10">Guru/pegawai yang belum melakukan absen masuk hari ini</p>
-                    </div>
-                    <span id="jumlah-guru-belum-presensi" class="self-start sm:self-auto shrink-0 text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-full">Memuat...</span>
-                </div>
-
-                <div id="list-guru-belum-presensi" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    <div class="sm:col-span-2 lg:col-span-3 text-xs text-slate-400 flex items-center gap-2 py-2">
-                        <i class="fa-solid fa-spinner animate-spin text-amber-500"></i>
-                        Memuat daftar guru...
-                    </div>
-                </div>
-            </div>
         </div>
 
 
@@ -617,15 +594,18 @@
                     <button type="button" onclick="setAdminReportPeriod('month')" id="btn-period-month" class="admin-period-btn px-4 py-2.5 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold hover:bg-slate-200 transition-all">
                         <i class="fa-solid fa-calendar-days mr-1"></i> Bulan Ini
                     </button>
+                    <button type="button" onclick="setAdminReportPeriod('custom')" id="btn-period-custom" class="admin-period-btn px-4 py-2.5 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold hover:bg-slate-200 transition-all">
+                        <i class="fa-solid fa-calendar-check mr-1"></i> Rentang Tanggal
+                    </button>
                 </div>
                 <div class="flex flex-wrap items-end gap-3">
                     <div class="flex flex-col gap-1">
                         <label for="admin-report-start" class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Dari Tanggal</label>
-                        <input type="date" id="admin-report-start" class="px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-purple-500">
+                        <input type="date" id="admin-report-start" onchange="markAdminReportCustom()" class="px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-purple-500">
                     </div>
                     <div class="flex flex-col gap-1">
                         <label for="admin-report-end" class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Sampai Tanggal</label>
-                        <input type="date" id="admin-report-end" class="px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-purple-500">
+                        <input type="date" id="admin-report-end" onchange="markAdminReportCustom()" class="px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-purple-500">
                     </div>
                     <button type="button" onclick="applyAdminAttendanceReport(true)" class="px-4 py-2.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold transition-all">
                         <i class="fa-solid fa-filter mr-1"></i> Tampilkan Rekap
@@ -669,6 +649,47 @@
         <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm col-span-2 lg:col-span-1">
             <div class="text-[10px] uppercase tracking-wider font-bold text-slate-500">Belum Lengkap</div>
             <div id="admin-stat-belum" class="text-3xl font-extrabold text-amber-600 mt-2">0</div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="p-5 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+                <div class="flex items-center gap-2">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="fa-brands fa-whatsapp text-lg"></i></div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900">Peringatan WhatsApp Guru Belum Absen</h3>
+                        <p class="text-xs text-slate-500 mt-1">Status hari ini. Pengiriman otomatis dijalankan oleh Google Apps Script agar tetap aktif meskipun halaman admin ditutup.</p>
+                    </div>
+                </div>
+            </div>
+            <button type="button" onclick="refreshAdminWaStatus(true)" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all">
+                <i class="fa-solid fa-rotate"></i> Muat Status Hari Ini
+            </button>
+        </div>
+        <div class="p-5 grid grid-cols-2 lg:grid-cols-4 gap-3 border-b border-slate-100 bg-slate-50/60">
+            <div class="bg-white rounded-xl border border-slate-100 p-4"><div class="text-[10px] font-bold uppercase text-slate-500">Guru Aktif</div><div id="wa-stat-total" class="text-2xl font-extrabold text-slate-900 mt-1">0</div></div>
+            <div class="bg-white rounded-xl border border-slate-100 p-4"><div class="text-[10px] font-bold uppercase text-slate-500">Sudah Absen Masuk</div><div id="wa-stat-sudah" class="text-2xl font-extrabold text-emerald-600 mt-1">0</div></div>
+            <div class="bg-white rounded-xl border border-slate-100 p-4"><div class="text-[10px] font-bold uppercase text-slate-500">Belum Absen</div><div id="wa-stat-belum" class="text-2xl font-extrabold text-amber-600 mt-1">0</div></div>
+            <div class="bg-white rounded-xl border border-slate-100 p-4"><div class="text-[10px] font-bold uppercase text-slate-500">Nomor WA Belum Diisi</div><div id="wa-stat-no-phone" class="text-2xl font-extrabold text-rose-600 mt-1">0</div></div>
+        </div>
+        <div class="overflow-x-auto max-h-[420px]">
+            <table class="w-full text-left border-collapse">
+                <thead class="sticky top-0 z-10">
+                    <tr class="bg-white text-slate-500 text-[11px] font-bold uppercase border-b border-slate-100">
+                        <th class="py-3 px-5">Guru / NIP</th>
+                        <th class="py-3 px-5">Nomor WA</th>
+                        <th class="py-3 px-5">Absen Masuk Hari Ini</th>
+                        <th class="py-3 px-5">Aksi Cadangan</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-wa-status-body" class="text-xs divide-y divide-slate-100">
+                    <tr><td colspan="4" class="py-8 text-center text-slate-400">Status WA belum dimuat.</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="px-5 py-4 bg-emerald-50/60 border-t border-emerald-100 text-[11px] text-emerald-800 leading-relaxed">
+            <i class="fa-solid fa-circle-info mr-1"></i> Agar WA otomatis aktif, isi nomor guru pada kolom <b>no_wa / whatsapp / hp / telepon</b> di data pengguna, lalu pasang file <b>WA_REMINDER_PATCH.gs</b> yang disertakan dalam paket update dan isi token Fonnte di Script Properties.
         </div>
     </div>
 
@@ -779,7 +800,7 @@
         //  SAKLAR DEPLOYMENT & KONFIGURASI UTAMA
         // ==========================================
         const IS_PREVIEW = false; 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbziO4n6VXpNtEfQkdrFpj9PSLWHiPFfREhunbNKr7__yuMc7yk6PqKSINDH5PEdMrp-bw/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzyDZxfW4nyFfFlAw_1tdD9ZNZykDrjIUc7v5_vR03oSlSOsqjxVlWouHbzKSZaAJiF-g/exec";
         const ATTENDANCE_RADIUS_METERS = 200;
 
         // State Global Aplikasi
@@ -805,9 +826,6 @@
         let adminReportSummaryRows = [];
         let adminReportDetailRows = [];
         let adminReportPeriodLabel = "";
-        let loginPublicUsersCache = [];
-        let loginPublicUsersFetchedAt = 0;
-        const LOGIN_PUBLIC_USERS_CACHE_MS = 60000;
 
         // Titik Koordinat Sekolah yang Sedang Terpilih
         let selectedSchoolLat = -7.766140;
@@ -823,7 +841,7 @@
             } else {
                 mockUsersDb = [
                     { username: "admin", password: "admin2026", nama: "Admin Pengawas Sekolah", nip: "197205151998031001", role: "Admin" },
-                    { username: "peserta", password: "edudigital", nama: "Agus Prasetyo, S.Pd.", nip: "198811122015041003", role: "Peserta" }
+                    { username: "peserta", password: "edudigital", nama: "Agus Prasetyo, S.Pd.", nip: "198811122015041003", role: "Peserta", no_wa: "081234567890" }
                 ];
                 localStorage.setItem("mock_users", JSON.stringify(mockUsersDb));
             }
@@ -1164,6 +1182,7 @@
                             updateDashboardStats();
                             if (currentSession && currentSession.role === "Admin") {
                                 initializeAdminAttendanceReport();
+                                refreshAdminWaStatus(false);
                             }
                         } else {
                             showToast("Gagal memuat database cloud: " + data.message, "error");
@@ -1226,6 +1245,7 @@
                         if (usersTable) renderUsersTable();
                         if (currentSession && currentSession.role === "Admin") {
                             applyAdminAttendanceReport(false);
+                            refreshAdminWaStatus(false);
                         }
                     } else {
                         showToast("Gagal memuat daftar pengguna dari cloud.", "error");
@@ -1267,6 +1287,7 @@
             }
             if (tabId === 'admin-menu') {
                 initializeAdminAttendanceReport();
+                refreshAdminWaStatus(false);
             }
 
             if (tabId === 'presensi') {
@@ -2540,10 +2561,21 @@ function applyDateFilters() {
 
         function setAdminReportPeriod(periodType, notify = true) {
             if (!currentSession || currentSession.role !== 'Admin') return;
+            const startInput = document.getElementById('admin-report-start');
+            const endInput = document.getElementById('admin-report-end');
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             let start = new Date(today);
             let end = new Date(today);
+
+            if (periodType === 'custom') {
+                if (!startInput.value) startInput.value = toLocalISODate(today);
+                if (!endInput.value) endInput.value = toLocalISODate(today);
+                markAdminReportCustom();
+                startInput.focus();
+                if (notify) showToast('Silakan tentukan tanggal awal dan tanggal akhir, lalu klik Tampilkan Rekap.', 'info');
+                return;
+            }
 
             if (periodType === 'week') {
                 const day = today.getDay();
@@ -2557,8 +2589,8 @@ function applyDateFilters() {
                 periodType = 'month';
             }
 
-            document.getElementById('admin-report-start').value = toLocalISODate(start);
-            document.getElementById('admin-report-end').value = toLocalISODate(end);
+            startInput.value = toLocalISODate(start);
+            endInput.value = toLocalISODate(end);
 
             document.querySelectorAll('.admin-period-btn').forEach(btn => {
                 btn.className = 'admin-period-btn px-4 py-2.5 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold hover:bg-slate-200 transition-all';
@@ -2568,6 +2600,14 @@ function applyDateFilters() {
                 activeButton.className = 'admin-period-btn px-4 py-2.5 rounded-xl bg-purple-100 text-purple-800 border border-purple-200 text-xs font-bold hover:bg-purple-200 transition-all';
             }
             applyAdminAttendanceReport(notify);
+        }
+
+        function markAdminReportCustom() {
+            document.querySelectorAll('.admin-period-btn').forEach(btn => {
+                btn.className = 'admin-period-btn px-4 py-2.5 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold hover:bg-slate-200 transition-all';
+            });
+            const customButton = document.getElementById('btn-period-custom');
+            if (customButton) customButton.className = 'admin-period-btn px-4 py-2.5 rounded-xl bg-purple-100 text-purple-800 border border-purple-200 text-xs font-bold hover:bg-purple-200 transition-all';
         }
 
         function applyAdminAttendanceReport(notify = false) {
@@ -2716,6 +2756,89 @@ function applyDateFilters() {
                     </tr>`;
                 }).join('');
             }
+        }
+
+        function getTeacherPhone(user) {
+            if (!user) return '';
+            const candidates = [user.no_wa, user.nowa, user.nomor_wa, user.nomorwa, user.whatsapp, user.wa, user.no_hp, user.nohp, user.hp, user.telepon, user.phone];
+            return String(candidates.find(v => v !== undefined && v !== null && String(v).trim()) || '').trim();
+        }
+
+        function normalizeWhatsAppNumber(value) {
+            let digits = String(value || '').replace(/\D/g, '');
+            if (!digits) return '';
+            if (digits.startsWith('0')) digits = '62' + digits.slice(1);
+            else if (!digits.startsWith('62')) digits = '62' + digits;
+            return digits;
+        }
+
+        function getActiveTeacherUsers() {
+            return (mockUsersDb || []).filter(user => {
+                const role = String(user.role || '').toLowerCase();
+                const status = String(user.status || 'Aktif').toLowerCase();
+                return role !== 'admin' && status !== 'nonaktif';
+            });
+        }
+
+        function refreshAdminWaStatus(notify = false) {
+            if (!currentSession || currentSession.role !== 'Admin') return;
+            const teachers = getActiveTeacherUsers().sort((a, b) => String(a.nama || '').localeCompare(String(b.nama || ''), 'id'));
+            const today = getTodayDateString();
+            const masukNips = new Set((mockAttendanceDb || []).filter(row => {
+                return normalizeDateToDDMMYYYY(row.tanggal) === today && String(row.tipe || '').toLowerCase() === 'masuk';
+            }).map(row => String(row.nip || '')));
+
+            const rows = teachers.map(user => {
+                const nip = String(user.nip || user.username || '');
+                const phoneRaw = getTeacherPhone(user);
+                const phone = normalizeWhatsAppNumber(phoneRaw);
+                return { user, nip, phoneRaw, phone, hasMasuk: masukNips.has(nip) };
+            });
+
+            const sudah = rows.filter(r => r.hasMasuk).length;
+            const belum = rows.filter(r => !r.hasMasuk).length;
+            const noPhone = rows.filter(r => !r.phone).length;
+            const el = id => document.getElementById(id);
+            if (el('wa-stat-total')) el('wa-stat-total').textContent = rows.length;
+            if (el('wa-stat-sudah')) el('wa-stat-sudah').textContent = sudah;
+            if (el('wa-stat-belum')) el('wa-stat-belum').textContent = belum;
+            if (el('wa-stat-no-phone')) el('wa-stat-no-phone').textContent = noPhone;
+
+            const body = el('admin-wa-status-body');
+            if (!body) return;
+            if (!rows.length) {
+                body.innerHTML = '<tr><td colspan="4" class="py-8 text-center text-slate-400">Belum ada data guru aktif.</td></tr>';
+            } else {
+                body.innerHTML = rows.map(row => {
+                    const statusBadge = row.hasMasuk
+                        ? '<span class="inline-flex px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-bold">Sudah Absen</span>'
+                        : '<span class="inline-flex px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100 text-[10px] font-bold">Belum Absen</span>';
+                    let action = '<span class="text-slate-400">-</span>';
+                    if (!row.hasMasuk && row.phone) {
+                        action = `<button type="button" onclick="openManualWaReminder('${escapeHtml(row.phone)}','${encodeURIComponent(String(row.user.nama || 'Guru'))}')" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold"><i class="fa-brands fa-whatsapp mr-1"></i> Buka WA</button>`;
+                    } else if (!row.hasMasuk && !row.phone) {
+                        action = '<span class="text-[10px] font-bold text-rose-600">Isi nomor WA</span>';
+                    }
+                    return `<tr class="hover:bg-slate-50/70">
+                        <td class="py-3 px-5"><div class="font-bold text-slate-800">${escapeHtml(row.user.nama || '-')}</div><div class="text-[10px] text-slate-400 font-mono">${escapeHtml(row.nip || '-')}</div></td>
+                        <td class="py-3 px-5 font-semibold ${row.phone ? 'text-slate-700' : 'text-rose-500'}">${escapeHtml(row.phoneRaw || 'Belum diisi')}</td>
+                        <td class="py-3 px-5">${statusBadge}</td>
+                        <td class="py-3 px-5">${action}</td>
+                    </tr>`;
+                }).join('');
+            }
+            if (notify) showToast(`Status hari ini dimuat: ${belum} guru belum absen masuk.`, belum ? 'info' : 'success');
+        }
+
+        function openManualWaReminder(phone, teacherNameEncoded) {
+            const target = normalizeWhatsAppNumber(phone);
+            const teacherName = decodeURIComponent(String(teacherNameEncoded || 'Guru'));
+            if (!target) {
+                showToast('Nomor WhatsApp guru belum tersedia.', 'error');
+                return;
+            }
+            const message = `Yth. Bapak/Ibu ${teacherName}, berdasarkan sistem E-Presensi hari ini Anda belum tercatat melakukan absen masuk. Mohon segera melakukan presensi apabila sudah berada di sekolah. Terima kasih.`;
+            window.open(`https://wa.me/${target}?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
         }
 
         function buildAdminReportPrintHTML() {
@@ -3300,109 +3423,6 @@ function renderFaceExpressionPreview(expression, detected = true){
     caption.className = 'text-[10px] font-bold text-violet-700 text-center';
 }
 
-// Mengambil daftar guru untuk panel publik halaman awal.
-// Data sensitif seperti password sengaja tidak disimpan ke cache frontend.
-async function getSafeUsersForLoginPage(forceRefresh = false){
-    const now = Date.now();
-    if (!forceRefresh && loginPublicUsersCache.length && (now - loginPublicUsersFetchedAt) < LOGIN_PUBLIC_USERS_CACHE_MS) {
-        return loginPublicUsersCache;
-    }
-
-    const response = await fetch(`${GAS_URL}?action=getUsers&_=${now}`, { cache: "no-store" });
-    const data = await response.json();
-    if (!data || !data.success) throw new Error(data?.message || "Daftar guru gagal dimuat");
-
-    loginPublicUsersCache = Array.from(data.users || []).map(user => ({
-        nama: String(user.nama || "").trim(),
-        nip: String(user.nip || "").trim(),
-        role: String(user.role || "").trim()
-    }));
-    loginPublicUsersFetchedAt = now;
-    return loginPublicUsersCache;
-}
-
-function normalizeIdentityText(value){
-    return String(value || "")
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, " ");
-}
-
-async function renderGuruBelumPresensi(masukHariIni){
-    const listEl = document.getElementById("list-guru-belum-presensi");
-    const countEl = document.getElementById("jumlah-guru-belum-presensi");
-    if (!listEl || !countEl) return;
-
-    try {
-        const users = await getSafeUsersForLoginPage();
-        const guruAktif = users
-            .filter(user => normalizeIdentityText(user.role) !== "admin")
-            .filter(user => user.nama || user.nip);
-
-        const nipSudahMasuk = new Set(
-            Array.from(masukHariIni || [])
-                .map(item => String(item?.nip || "").trim())
-                .filter(Boolean)
-        );
-        const namaSudahMasuk = new Set(
-            Array.from(masukHariIni || [])
-                .map(item => normalizeIdentityText(item?.nama))
-                .filter(Boolean)
-        );
-
-        const belumPresensi = guruAktif
-            .filter(user => {
-                const nip = String(user.nip || "").trim();
-                const nama = normalizeIdentityText(user.nama);
-                const sudahMasuk = (nip && nipSudahMasuk.has(nip)) || (nama && namaSudahMasuk.has(nama));
-                return !sudahMasuk;
-            })
-            .sort((a, b) => String(a.nama || "").localeCompare(String(b.nama || ""), "id", { sensitivity: "base" }));
-
-        countEl.textContent = `${belumPresensi.length} Guru`;
-        countEl.className = belumPresensi.length
-            ? "self-start sm:self-auto shrink-0 text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-full"
-            : "self-start sm:self-auto shrink-0 text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-full";
-
-        if (!belumPresensi.length) {
-            listEl.innerHTML = `
-                <div class="sm:col-span-2 lg:col-span-3 rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-4 flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
-                        <i class="fa-solid fa-circle-check"></i>
-                    </div>
-                    <div>
-                        <div class="text-sm font-bold text-emerald-800">Semua guru sudah presensi masuk</div>
-                        <div class="text-[11px] text-emerald-700/80 mt-0.5">Tidak ada guru yang berstatus belum presensi hari ini.</div>
-                    </div>
-                </div>`;
-            return;
-        }
-
-        listEl.innerHTML = belumPresensi.map((guru, index) => `
-            <div class="rounded-2xl border border-amber-100 bg-gradient-to-br from-amber-50/80 to-white p-3.5 flex items-start gap-3 shadow-sm min-w-0">
-                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 font-extrabold text-xs">
-                    ${String(index + 1).padStart(2, "0")}
-                </div>
-                <div class="min-w-0 flex-1">
-                    <div class="text-xs font-bold text-slate-800 break-words">${escapeHtml(guru.nama || "Tanpa Nama")}</div>
-                    <div class="text-[10px] text-slate-500 mt-1 break-all">NIP: ${escapeHtml(guru.nip || "-")}</div>
-                    <span class="inline-flex items-center gap-1 mt-2 px-2 py-1 rounded-full border border-amber-200 bg-white text-[9px] font-bold text-amber-700">
-                        <i class="fa-solid fa-clock"></i> Belum Absen Masuk
-                    </span>
-                </div>
-            </div>`).join("");
-    } catch (error) {
-        console.error("Gagal memuat guru belum presensi:", error);
-        countEl.textContent = "Gagal dimuat";
-        countEl.className = "self-start sm:self-auto shrink-0 text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 px-3 py-1.5 rounded-full";
-        listEl.innerHTML = `
-            <div class="sm:col-span-2 lg:col-span-3 rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 text-xs text-rose-700">
-                <i class="fa-solid fa-triangle-exclamation mr-1"></i>
-                Daftar guru belum presensi tidak dapat dimuat. Pastikan action <b>getUsers</b> pada Google Apps Script dapat diakses.
-            </div>`;
-    }
-}
-
 function loadPresensiHariIni(){
 
     const masukBox = document.getElementById("list-presensi-masuk");
@@ -3424,10 +3444,6 @@ function loadPresensiHariIni(){
             total.innerHTML = '0 Hadir';
             if (jumlahMasukEl) jumlahMasukEl.textContent = '0 Data';
             if (jumlahPulangEl) jumlahPulangEl.textContent = '0 Data';
-            const belumList = document.getElementById("list-guru-belum-presensi");
-            const belumCount = document.getElementById("jumlah-guru-belum-presensi");
-            if (belumCount) belumCount.textContent = "Tidak tersedia";
-            if (belumList) belumList.innerHTML = '<div class="sm:col-span-2 lg:col-span-3 text-xs text-rose-500">Status belum presensi tidak dapat dihitung karena data presensi gagal dimuat.</div>';
             return;
         }
 
@@ -3539,9 +3555,6 @@ function loadPresensiHariIni(){
         pulangBox.innerHTML = pulangHariIni.map(p => card(p, "Pulang")).join("") ||
             '<div class="text-xs text-slate-400">Belum ada absen pulang hari ini</div>';
 
-        // Bandingkan daftar guru aktif dengan data absen Masuk hari ini.
-        renderGuruBelumPresensi(masukHariIni);
-
     })
     .catch(err => {
         console.error("Gagal memuat presensi hari ini:", err);
@@ -3549,10 +3562,6 @@ function loadPresensiHariIni(){
         pulangBox.innerHTML = '<div class="text-xs text-rose-500">Koneksi ke server gagal</div>';
         if (jumlahMasukEl) jumlahMasukEl.textContent = '0 Data';
         if (jumlahPulangEl) jumlahPulangEl.textContent = '0 Data';
-        const belumList = document.getElementById("list-guru-belum-presensi");
-        const belumCount = document.getElementById("jumlah-guru-belum-presensi");
-        if (belumCount) belumCount.textContent = "Koneksi gagal";
-        if (belumList) belumList.innerHTML = '<div class="sm:col-span-2 lg:col-span-3 text-xs text-rose-500">Koneksi ke server gagal. Data guru belum presensi belum dapat ditampilkan.</div>';
     });
 
 }
