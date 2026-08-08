@@ -123,7 +123,7 @@
                         Presensi Hari Ini
                     </h2>
                     <p class="text-xs text-slate-500">
-                        Guru yang sudah melakukan absen masuk
+                        Status kehadiran guru hari ini secara real-time
                     </p>
                 </div>
                 <div class="bg-emerald-100 text-emerald-700 px-3 py-2 rounded-xl text-xs font-bold" id="total-hadir-login">
@@ -131,25 +131,79 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 items-start">
+                <!-- PANEL KIRI: GURU YANG BELUM PRESENSI MASUK -->
+                <div class="min-w-0 bg-amber-50/40 border border-amber-100 rounded-2xl p-4">
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <div>
+                            <h3 class="text-sm font-bold text-amber-700">🟠 BELUM PRESENSI</h3>
+                            <p class="text-[10px] text-slate-500 mt-0.5">Guru aktif yang belum absen masuk dan tidak memiliki keterangan resmi hari ini</p>
+                        </div>
+                        <span id="jumlah-belum-presensi" class="shrink-0 text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 px-2 py-1 rounded-full">0 Guru</span>
+                    </div>
+                    <div id="list-belum-presensi" class="space-y-2 max-h-[460px] overflow-y-auto pr-1">
+                        <div class="text-xs text-slate-400">Memuat daftar guru...</div>
+                    </div>
+                </div>
+
+                <!-- GURU YANG SUDAH PRESENSI MASUK -->
                 <div class="min-w-0">
                     <div class="flex items-center justify-between gap-2 mb-3">
                         <h3 class="text-sm font-bold text-emerald-600">🟢 ABSEN MASUK</h3>
                         <span id="jumlah-presensi-masuk" class="shrink-0 text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 px-2 py-1 rounded-full">0 Data</span>
                     </div>
-                    <div id="list-presensi-masuk" class="space-y-3">
+                    <div id="list-presensi-masuk" class="space-y-3 max-h-[460px] overflow-y-auto pr-1">
                         Memuat data...
                     </div>
                 </div>
-                <div class="min-w-0">
+
+                <!-- GURU YANG SUDAH PRESENSI PULANG -->
+                <div class="min-w-0 md:col-span-2 xl:col-span-1">
                     <div class="flex items-center justify-between gap-2 mb-3">
                         <h3 class="text-sm font-bold text-blue-600">🔵 ABSEN PULANG</h3>
                         <span id="jumlah-presensi-pulang" class="shrink-0 text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-100 px-2 py-1 rounded-full">0 Data</span>
                     </div>
-                    <div id="list-presensi-pulang" class="space-y-3">
+                    <div id="list-presensi-pulang" class="space-y-3 max-h-[460px] overflow-y-auto pr-1">
                         Memuat data...
                     </div>
                 </div>
+            </div>
+
+            <!-- GURU IZIN / SAKIT / TUGAS DINAS LUAR HARI INI -->
+            <div class="mt-6 rounded-2xl border border-violet-100 bg-violet-50/30 p-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                    <div>
+                        <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-clipboard-user text-violet-600"></i> Izin, Sakit & Tugas Dinas Luar Hari Ini
+                        </h3>
+                        <p class="text-[10px] text-slate-500 mt-1">Menampilkan guru yang tidak melakukan presensi masuk karena memiliki keterangan resmi.</p>
+                    </div>
+                    <span id="jumlah-status-login" class="shrink-0 text-[10px] font-bold bg-violet-100 text-violet-800 border border-violet-200 px-2.5 py-1.5 rounded-full">0 Guru</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div class="bg-white rounded-xl border border-amber-100 p-3">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-amber-700"><i class="fa-solid fa-envelope-open-text mr-1"></i> IZIN</span>
+                            <span id="jumlah-status-izin-login" class="text-[9px] font-extrabold bg-amber-50 text-amber-700 px-2 py-1 rounded-full">0</span>
+                        </div>
+                        <div id="list-status-izin-login" class="space-y-2"><div class="text-[10px] text-slate-400">Memuat...</div></div>
+                    </div>
+                    <div class="bg-white rounded-xl border border-rose-100 p-3">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-rose-700"><i class="fa-solid fa-notes-medical mr-1"></i> SAKIT</span>
+                            <span id="jumlah-status-sakit-login" class="text-[9px] font-extrabold bg-rose-50 text-rose-700 px-2 py-1 rounded-full">0</span>
+                        </div>
+                        <div id="list-status-sakit-login" class="space-y-2"><div class="text-[10px] text-slate-400">Memuat...</div></div>
+                    </div>
+                    <div class="bg-white rounded-xl border border-sky-100 p-3">
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold text-sky-700"><i class="fa-solid fa-briefcase mr-1"></i> DINAS LUAR</span>
+                            <span id="jumlah-status-dinas-login" class="text-[9px] font-extrabold bg-sky-50 text-sky-700 px-2 py-1 rounded-full">0</span>
+                        </div>
+                        <div id="list-status-dinas-login" class="space-y-2"><div class="text-[10px] text-slate-400">Memuat...</div></div>
+                    </div>
+                </div>
+                <p class="text-[9px] text-slate-400 mt-3"><i class="fa-solid fa-shield-halved mr-1"></i>Halaman publik hanya menampilkan nama dan jenis ketidakhadiran. Alasan serta surat pendukung tidak ditampilkan.</p>
             </div>
         </div>
 
@@ -194,6 +248,9 @@
 				
                 <button onclick="switchTab('presensi')" id="btn-tab-presensi" class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 text-slate-600 hover:text-slate-900">
                     <i class="fa-solid fa-camera"></i> Presensi Face Mesh
+                </button>
+                <button onclick="switchTab('status-kehadiran')" id="btn-tab-status-kehadiran" class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 text-slate-600 hover:text-slate-900">
+                    <i class="fa-solid fa-file-circle-plus"></i> Izin / Sakit / Dinas
                 </button>
                 <button onclick="switchTab('jurnal')" id="btn-tab-jurnal" class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 text-slate-600 hover:text-slate-900">
                     <i class="fa-solid fa-book-open"></i> Jurnal Kinerja
@@ -240,6 +297,88 @@
                             <span id="con-status-badge" class="px-2.5 py-1 text-xs font-bold rounded-full bg-blue-50 text-blue-700 border border-blue-200">READY</span>
                         </div>
                         <p class="text-xs text-slate-400" id="gas-url-badge">Mendeteksi model penempatan...</p>
+                    </div>
+                </div>
+
+                <!-- ADMIN ONLY: PANEL PRESENSI GURU HARI INI -->
+                <div id="admin-teacher-attendance-panel" class="hidden bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                                    <i class="fa-solid fa-user-check"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-base font-bold text-slate-900">Presensi Guru Hari Ini</h3>
+                                    <p class="text-xs text-slate-500">Panel kiri menampilkan guru yang belum presensi masuk, panel kanan menampilkan guru yang sudah presensi.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span id="admin-teacher-attendance-date" class="text-[11px] font-bold bg-slate-100 text-slate-700 px-3 py-2 rounded-xl">Hari ini</span>
+                            <button type="button" onclick="renderAdminTeacherAttendancePanel(true)" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-rotate"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
+                        <!-- PANEL KIRI: BELUM PRESENSI -->
+                        <div class="p-5 bg-amber-50/30">
+                            <div class="flex items-center justify-between gap-3 mb-4">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                                        <h4 class="text-sm font-extrabold text-slate-900">Belum Presensi Masuk</h4>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 mt-1">Guru aktif yang belum absen masuk dan tidak memiliki keterangan resmi hari ini.</p>
+                                </div>
+                                <span id="admin-teacher-belum-count" class="shrink-0 px-3 py-1.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-xs font-extrabold">0 Guru</span>
+                            </div>
+                            <div id="admin-teacher-belum-list" class="space-y-2 max-h-[360px] overflow-y-auto pr-1">
+                                <div class="py-8 text-center text-xs text-slate-400">Menunggu data guru...</div>
+                            </div>
+                        </div>
+
+                        <!-- PANEL KANAN: SUDAH PRESENSI -->
+                        <div class="p-5 bg-emerald-50/20">
+                            <div class="flex items-center justify-between gap-3 mb-4">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                        <h4 class="text-sm font-extrabold text-slate-900">Sudah Presensi Masuk</h4>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 mt-1">Guru yang sudah tercatat melakukan absen masuk hari ini.</p>
+                                </div>
+                                <span id="admin-teacher-sudah-count" class="shrink-0 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-extrabold">0 Guru</span>
+                            </div>
+                            <div id="admin-teacher-sudah-list" class="space-y-2 max-h-[360px] overflow-y-auto pr-1">
+                                <div class="py-8 text-center text-xs text-slate-400">Menunggu data presensi...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
+                        <span><i class="fa-solid fa-circle-info text-indigo-500 mr-1"></i>Status dihitung dari <b>Absen Masuk</b> pada tanggal hari ini.</span>
+                        <span id="admin-teacher-attendance-updated">Belum diperbarui</span>
+                    </div>
+                </div>
+
+                <!-- ADMIN ONLY: IZIN / SAKIT / TUGAS DINAS LUAR HARI INI -->
+                <div id="admin-status-kehadiran-panel" class="hidden bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900"><i class="fa-solid fa-clipboard-list text-violet-600 mr-2"></i>Ketidakhadiran Resmi Hari Ini</h3>
+                            <p class="text-xs text-slate-500 mt-1">Daftar guru Izin, Sakit, dan Tugas Dinas Luar. Admin dapat membuka surat pendukung jika tersedia.</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2 text-[10px] font-bold">
+                            <span id="admin-status-count-izin" class="px-2.5 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-100">Izin 0</span>
+                            <span id="admin-status-count-sakit" class="px-2.5 py-1.5 rounded-full bg-rose-50 text-rose-700 border border-rose-100">Sakit 0</span>
+                            <span id="admin-status-count-dinas" class="px-2.5 py-1.5 rounded-full bg-sky-50 text-sky-700 border border-sky-100">Dinas 0</span>
+                        </div>
+                    </div>
+                    <div id="admin-status-kehadiran-list" class="p-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                        <div class="text-xs text-slate-400">Memuat data ketidakhadiran...</div>
                     </div>
                 </div>
 
@@ -371,11 +510,9 @@
                         <div class="flex flex-col gap-1">
                             <label class="text-xs font-bold text-slate-500">Keterangan Status</label>
                             <select id="presensi-keterangan" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-indigo-500 font-medium bg-white">
-                                <option value="Hadir">Hadir (Tepat Waktu)</option>
-                                <option value="Tugas Dinas">Tugas Dinas (Luar Sekolah)</option>
-                                <option value="Izin">Izin (Dengan Alasan Sah)</option>
-                                <option value="Sakit">Sakit (Dengan Surat Dokter)</option>
+                                <option value="Hadir">Hadir</option>
                             </select>
+                            <p class="text-[9px] text-slate-400 mt-1">Untuk Izin, Sakit, atau Tugas Dinas Luar gunakan menu <b>Izin / Sakit / Dinas</b>.</p>
                         </div>
 
                         <!-- Informasi ekspresi wajah dari Face Mesh -->
@@ -420,6 +557,107 @@
                         </div>
 
                     </form>
+                </div>
+            </section>
+
+            <!-- ==================== TAB: IZIN / SAKIT / TUGAS DINAS LUAR ==================== -->
+            <section id="tab-status-kehadiran" class="tab-content hidden flex flex-col gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <form id="form-status-kehadiran" onsubmit="handleStatusKehadiranSubmit(event)" class="lg:col-span-8 bg-white p-6 sm:p-8 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-5">
+                        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-900">Keterangan Tidak Masuk</h3>
+                                <p class="text-xs text-slate-500 mt-1">Gunakan formulir ini jika tidak masuk karena izin, sakit, atau tugas dinas luar.</p>
+                            </div>
+                            <span class="inline-flex self-start px-3 py-1.5 rounded-full bg-violet-50 text-violet-700 border border-violet-100 text-[10px] font-bold">SURAT OPSIONAL</span>
+                        </div>
+                        <hr class="border-slate-100">
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-xs font-bold text-slate-500">NIP / ID Guru</label>
+                                <input type="text" id="status-nip" readonly class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium bg-slate-50 text-slate-600 cursor-not-allowed">
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-xs font-bold text-slate-500">Nama Lengkap</label>
+                                <input type="text" id="status-nama" readonly class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium bg-slate-50 text-slate-600 cursor-not-allowed">
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <label class="text-xs font-bold text-slate-500">Jenis Ketidakhadiran</label>
+                            <select id="status-jenis" required onchange="updateStatusLetterHint()" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-violet-500 font-semibold bg-white">
+                                <option value="Izin">Izin</option>
+                                <option value="Sakit">Sakit</option>
+                                <option value="Tugas Dinas Luar">Tugas Dinas Luar</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-xs font-bold text-slate-500">Tanggal Mulai</label>
+                                <input type="date" id="status-tanggal-mulai" required onchange="syncStatusEndDate()" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-violet-500 font-semibold">
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-xs font-bold text-slate-500">Tanggal Selesai</label>
+                                <input type="date" id="status-tanggal-selesai" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-violet-500 font-semibold">
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <label class="text-xs font-bold text-slate-500">Alasan / Keterangan</label>
+                            <textarea id="status-keterangan" rows="4" maxlength="1000" required placeholder="Tuliskan keterangan singkat dan jelas..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-violet-500 font-medium"></textarea>
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <label class="text-xs font-bold text-slate-500">Surat Pendukung <span class="font-normal text-slate-400">(opsional)</span></label>
+                            <input type="file" id="status-surat" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" onchange="handleStatusFileChange()" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs bg-white file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-violet-50 file:text-violet-700 file:font-bold">
+                            <p id="status-surat-hint" class="text-[10px] text-slate-400 mt-1">Surat izin dapat dilampirkan bila tersedia. Format PDF/JPG/PNG, maksimal 5 MB.</p>
+                            <p id="status-surat-file-info" class="text-[10px] font-semibold text-violet-700"></p>
+                        </div>
+
+                        <div class="rounded-xl bg-amber-50 border border-amber-100 p-3 text-[10px] text-amber-800 leading-relaxed">
+                            <i class="fa-solid fa-circle-info mr-1"></i> Guru yang memiliki keterangan aktif pada hari ini tidak akan dimasukkan ke daftar <b>Belum Presensi</b> dan tidak akan dikirim pengingat WhatsApp presensi masuk.
+                        </div>
+
+                        <button type="submit" id="btn-submit-status-kehadiran" class="w-full bg-violet-600 hover:bg-violet-700 text-white py-3.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-violet-100 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> Kirim Keterangan Ketidakhadiran
+                        </button>
+                    </form>
+
+                    <div class="lg:col-span-4 flex flex-col gap-4">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                            <h4 class="text-sm font-extrabold text-slate-900 mb-3">Jenis Keterangan</h4>
+                            <div class="space-y-3 text-xs">
+                                <div class="p-3 rounded-xl bg-amber-50 border border-amber-100"><b class="text-amber-700">Izin</b><p class="text-slate-500 mt-1">Keperluan pribadi/keluarga dengan alasan yang sah. Surat dapat dilampirkan bila ada.</p></div>
+                                <div class="p-3 rounded-xl bg-rose-50 border border-rose-100"><b class="text-rose-700">Sakit</b><p class="text-slate-500 mt-1">Tidak dapat hadir karena kondisi kesehatan. Surat dokter dapat dilampirkan bila tersedia.</p></div>
+                                <div class="p-3 rounded-xl bg-sky-50 border border-sky-100"><b class="text-sky-700">Tugas Dinas Luar</b><p class="text-slate-500 mt-1">Penugasan resmi di luar sekolah. Disarankan melampirkan surat tugas.</p></div>
+                            </div>
+                        </div>
+                        <div id="status-admin-note" class="hidden bg-indigo-50 p-4 rounded-2xl border border-indigo-100 text-xs text-indigo-800">
+                            <i class="fa-solid fa-user-shield mr-1"></i> Sebagai Admin, Anda melihat riwayat seluruh guru. Form pengajuan dinonaktifkan untuk akun Admin.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h3 id="status-history-title" class="text-base font-bold text-slate-900">Riwayat Keterangan Saya</h3>
+                            <p class="text-xs text-slate-500 mt-1">Surat pendukung hanya dapat dibuka dari akun yang memiliki akses ke file Drive.</p>
+                        </div>
+                        <span id="status-history-count" class="text-[10px] font-bold bg-violet-50 text-violet-700 border border-violet-100 px-3 py-1.5 rounded-full">0 Data</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left min-w-[900px]">
+                            <thead class="bg-slate-50 text-[10px] uppercase tracking-wider text-slate-500">
+                                <tr><th class="py-3 px-5">Guru</th><th class="py-3 px-5">Jenis</th><th class="py-3 px-5">Periode</th><th class="py-3 px-5">Keterangan</th><th class="py-3 px-5">Surat</th><th class="py-3 px-5">Status</th></tr>
+                            </thead>
+                            <tbody id="status-history-body" class="text-xs divide-y divide-slate-100">
+                                <tr><td colspan="6" class="py-8 text-center text-slate-400">Belum ada data.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
@@ -800,7 +1038,7 @@
         //  SAKLAR DEPLOYMENT & KONFIGURASI UTAMA
         // ==========================================
         const IS_PREVIEW = false; 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbziO4n6VXpNtEfQkdrFpj9PSLWHiPFfREhunbNKr7__yuMc7yk6PqKSINDH5PEdMrp-bw/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzyDZxfW4nyFfFlAw_1tdD9ZNZykDrjIUc7v5_vR03oSlSOsqjxVlWouHbzKSZaAJiF-g/exec";
         const ATTENDANCE_RADIUS_METERS = 200;
 
         // State Global Aplikasi
@@ -808,6 +1046,8 @@
         let mockAttendanceDb = [];
         let mockJurnalDb = [];
         let mockUsersDb = [];
+        let mockStatusKehadiranDb = [];
+        let publicStatusKehadiranHariIni = [];
         let mockLocationsDb = []; // Database 5 Titik Koordinat Sekolah
         
         // Data GPS Perangkat Guru saat Absen
@@ -894,7 +1134,15 @@
                 localStorage.setItem("mock_presensi", JSON.stringify(mockAttendanceDb));
             }
 
-            // 4. Database Jurnal
+            // 4. Database Keterangan Ketidakhadiran
+            if (localStorage.getItem("mock_status_kehadiran")) {
+                mockStatusKehadiranDb = JSON.parse(localStorage.getItem("mock_status_kehadiran"));
+            } else {
+                mockStatusKehadiranDb = [];
+                localStorage.setItem("mock_status_kehadiran", JSON.stringify(mockStatusKehadiranDb));
+            }
+
+            // 5. Database Jurnal
             if (localStorage.getItem("mock_jurnal")) {
                 mockJurnalDb = JSON.parse(localStorage.getItem("mock_jurnal"));
             } else {
@@ -1114,20 +1362,40 @@
             document.getElementById('presensi-nama').value = currentSession.nama;
             document.getElementById('jurnal-nip').value = currentSession.nip;
             document.getElementById('jurnal-nama').value = currentSession.nama;
+            const statusNipEl = document.getElementById('status-nip');
+            const statusNamaEl = document.getElementById('status-nama');
+            if (statusNipEl) statusNipEl.value = currentSession.nip;
+            if (statusNamaEl) statusNamaEl.value = currentSession.nama;
+            initializeStatusFormDates();
 
             // Visibility tab setups for admin
             const guideTab = document.getElementById('btn-tab-panduan');
             const adminTab = document.getElementById('btn-tab-admin-menu');
             const searchWrapper = document.getElementById('rekap-admin-search-wrapper');
+            const adminTeacherAttendancePanel = document.getElementById('admin-teacher-attendance-panel');
+            const adminStatusKehadiranPanel = document.getElementById('admin-status-kehadiran-panel');
+            const statusForm = document.getElementById('form-status-kehadiran');
+            const statusAdminNote = document.getElementById('status-admin-note');
+            const statusHistoryTitle = document.getElementById('status-history-title');
 
             if (currentSession.role === "Admin") {
                 if (adminTab) adminTab.classList.remove('hidden');
                 if (searchWrapper) searchWrapper.classList.remove('hidden');
+                if (adminTeacherAttendancePanel) adminTeacherAttendancePanel.classList.remove('hidden');
+                if (adminStatusKehadiranPanel) adminStatusKehadiranPanel.classList.remove('hidden');
+                if (statusForm) statusForm.classList.add('hidden');
+                if (statusAdminNote) statusAdminNote.classList.remove('hidden');
+                if (statusHistoryTitle) statusHistoryTitle.textContent = 'Daftar Ketidakhadiran Seluruh Guru';
                 document.getElementById('dash-card1-title').innerText = "Total Presensi Hari Ini";
                 document.getElementById('dash-card1-desc').innerText = "Seluruh guru yang absen hari ini";
             } else {
                 if (adminTab) adminTab.classList.add('hidden');
                 if (searchWrapper) searchWrapper.classList.add('hidden');
+                if (adminTeacherAttendancePanel) adminTeacherAttendancePanel.classList.add('hidden');
+                if (adminStatusKehadiranPanel) adminStatusKehadiranPanel.classList.add('hidden');
+                if (statusForm) statusForm.classList.remove('hidden');
+                if (statusAdminNote) statusAdminNote.classList.add('hidden');
+                if (statusHistoryTitle) statusHistoryTitle.textContent = 'Riwayat Keterangan Saya';
                 document.getElementById('dash-card1-title').innerText = "Kehadiran Pribadi";
                 document.getElementById('dash-card1-desc').innerText = "Total presensi Anda bulan ini";
             }
@@ -1155,12 +1423,16 @@
                 renderAttendanceTable(mockAttendanceDb);
                 renderUsersTable();
                 updateDashboardStats();
+                renderStatusKehadiranHistory();
                 if (currentSession && currentSession.role === "Admin") {
                     initializeAdminAttendanceReport();
+                    renderAdminTeacherAttendancePanel(false);
+                    renderAdminStatusKehadiranPanel();
                 }
             } else {
                 // Ambil daftar lokasi cabang sekolah dari GAS terlebih dahulu
                 fetchLocationsFromGAS();
+                fetchStatusKehadiranFromGAS();
 
                 // Ambil daftar Presensi & Jurnal
                 const url = `${GAS_URL}?action=getData&role=${currentSession.role}&nip=${currentSession.nip}`;
@@ -1183,6 +1455,8 @@
                             if (currentSession && currentSession.role === "Admin") {
                                 initializeAdminAttendanceReport();
                                 refreshAdminWaStatus(false);
+                                renderAdminTeacherAttendancePanel(false);
+                                renderAdminStatusKehadiranPanel();
                             }
                         } else {
                             showToast("Gagal memuat database cloud: " + data.message, "error");
@@ -1246,6 +1520,8 @@
                         if (currentSession && currentSession.role === "Admin") {
                             applyAdminAttendanceReport(false);
                             refreshAdminWaStatus(false);
+                            renderAdminTeacherAttendancePanel(false);
+                            renderAdminStatusKehadiranPanel();
                         }
                     } else {
                         showToast("Gagal memuat daftar pengguna dari cloud.", "error");
@@ -1285,9 +1561,15 @@
             if (tabId === 'rekap-jurnal') {
                 renderJurnalRekap();
             }
+            if (tabId === 'status-kehadiran') {
+                renderStatusKehadiranHistory();
+            }
             if (tabId === 'admin-menu') {
                 initializeAdminAttendanceReport();
                 refreshAdminWaStatus(false);
+            }
+            if (tabId === 'dashboard' && currentSession && currentSession.role === 'Admin') {
+                renderAdminTeacherAttendancePanel(false);
             }
 
             if (tabId === 'presensi') {
@@ -2294,6 +2576,7 @@ checkTodayAttendanceStatus();
                 // Hanya menghitung rekaman presensi pada tanggal hari ini.
                 document.getElementById('stat-total-presensi').innerText = attendanceToday.length;
                 document.getElementById('stat-total-jurnal').innerText = mockJurnalDb.length;
+                renderAdminTeacherAttendancePanel(false);
             } else {
                 // Presensi pribadi hanya untuk hari ini agar sesuai dengan judul kartu.
                 const personalPresensiToday = attendanceToday.filter(
@@ -2758,6 +3041,114 @@ function applyDateFilters() {
             }
         }
 
+        function renderAdminTeacherAttendancePanel(notify = false) {
+            const panel = document.getElementById('admin-teacher-attendance-panel');
+            if (!currentSession || currentSession.role !== 'Admin') {
+                if (panel) panel.classList.add('hidden');
+                return;
+            }
+            if (panel) panel.classList.remove('hidden');
+
+            const teachers = getActiveTeacherUsers().sort((a, b) =>
+                String(a.nama || '').localeCompare(String(b.nama || ''), 'id', { sensitivity: 'base' })
+            );
+            const today = getTodayDateString();
+            const todayMasuk = (mockAttendanceDb || [])
+                .filter(row => normalizeDateToDDMMYYYY(row.tanggal) === today && String(row.tipe || '').toLowerCase() === 'masuk')
+                .sort((a, b) => adminTimeToSeconds(a.jam) - adminTimeToSeconds(b.jam));
+
+            // Ambil satu rekaman masuk paling awal untuk setiap guru.
+            const masukByNip = new Map();
+            todayMasuk.forEach(row => {
+                const nip = String(row.nip || '').trim();
+                if (nip && !masukByNip.has(nip)) masukByNip.set(nip, row);
+            });
+
+            const activeStatusRows = getActiveStatusKehadiranForDate(today);
+            const statusByKey = new Map();
+            activeStatusRows.forEach(statusRow => {
+                const nip = String(statusRow.nip || '').trim();
+                const nama = String(statusRow.nama || '').trim().toLowerCase();
+                if (nip) statusByKey.set(`nip:${nip}`, statusRow);
+                if (nama) statusByKey.set(`nama:${nama}`, statusRow);
+            });
+
+            const rows = teachers.map(user => {
+                const nip = String(user.nip || user.username || '').trim();
+                const namaKey = String(user.nama || '').trim().toLowerCase();
+                const attendance = masukByNip.get(nip) || null;
+                const officialStatus = statusByKey.get(`nip:${nip}`) || statusByKey.get(`nama:${namaKey}`) || null;
+                return { user, nip, attendance, officialStatus };
+            });
+            const belum = rows.filter(row => !row.attendance && !row.officialStatus);
+            const sudah = rows.filter(row => !!row.attendance);
+
+            const dateEl = document.getElementById('admin-teacher-attendance-date');
+            const belumCountEl = document.getElementById('admin-teacher-belum-count');
+            const sudahCountEl = document.getElementById('admin-teacher-sudah-count');
+            const belumListEl = document.getElementById('admin-teacher-belum-list');
+            const sudahListEl = document.getElementById('admin-teacher-sudah-list');
+            const updatedEl = document.getElementById('admin-teacher-attendance-updated');
+
+            if (dateEl) dateEl.textContent = `Hari ini • ${today}`;
+            if (belumCountEl) belumCountEl.textContent = `${belum.length} Guru`;
+            if (sudahCountEl) sudahCountEl.textContent = `${sudah.length} Guru`;
+
+            const teacherInitial = name => {
+                const parts = String(name || 'G').trim().split(/\s+/).filter(Boolean);
+                return (parts.slice(0, 2).map(x => x.charAt(0)).join('') || 'G').toUpperCase();
+            };
+
+            if (belumListEl) {
+                if (!teachers.length) {
+                    belumListEl.innerHTML = '<div class="py-8 text-center text-xs text-slate-400">Belum ada data guru aktif.</div>';
+                } else if (!belum.length) {
+                    belumListEl.innerHTML = '<div class="py-8 text-center"><div class="w-11 h-11 mx-auto rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2"><i class="fa-solid fa-check"></i></div><div class="text-xs font-bold text-emerald-700">Semua guru sudah hadir atau memiliki keterangan resmi.</div></div>';
+                } else {
+                    belumListEl.innerHTML = belum.map(row => {
+                        const nama = String(row.user.nama || 'Guru');
+                        return `<div class="bg-white border border-amber-100 rounded-xl p-3 flex items-center gap-3 shadow-sm">
+                            <div class="shrink-0 w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-[11px] font-extrabold">${escapeHtml(teacherInitial(nama))}</div>
+                            <div class="min-w-0 flex-1">
+                                <div class="text-xs font-bold text-slate-800 truncate">${escapeHtml(nama)}</div>
+                                <div class="text-[10px] text-slate-400 font-mono truncate">${escapeHtml(row.nip || '-')}</div>
+                            </div>
+                            <span class="shrink-0 px-2 py-1 rounded-lg bg-amber-50 text-amber-700 border border-amber-100 text-[9px] font-extrabold">BELUM</span>
+                        </div>`;
+                    }).join('');
+                }
+            }
+
+            if (sudahListEl) {
+                if (!teachers.length) {
+                    sudahListEl.innerHTML = '<div class="py-8 text-center text-xs text-slate-400">Belum ada data guru aktif.</div>';
+                } else if (!sudah.length) {
+                    sudahListEl.innerHTML = '<div class="py-8 text-center text-xs text-slate-400">Belum ada guru yang presensi masuk hari ini.</div>';
+                } else {
+                    sudahListEl.innerHTML = sudah.map(row => {
+                        const nama = String(row.user.nama || row.attendance?.nama || 'Guru');
+                        const jam = formatJamIndonesia(row.attendance?.jam || '-');
+                        const lokasi = row.attendance?.nama_lokasi || row.attendance?.lokasi || '-';
+                        return `<div class="bg-white border border-emerald-100 rounded-xl p-3 flex items-center gap-3 shadow-sm">
+                            <div class="shrink-0 w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-[11px] font-extrabold">${escapeHtml(teacherInitial(nama))}</div>
+                            <div class="min-w-0 flex-1">
+                                <div class="text-xs font-bold text-slate-800 truncate">${escapeHtml(nama)}</div>
+                                <div class="text-[10px] text-slate-500 truncate"><i class="fa-regular fa-clock mr-1 text-emerald-600"></i>${escapeHtml(jam)} <span class="text-slate-300 mx-1">•</span> ${escapeHtml(lokasi)}</div>
+                            </div>
+                            <span class="shrink-0 px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 text-[9px] font-extrabold">HADIR</span>
+                        </div>`;
+                    }).join('');
+                }
+            }
+
+            if (updatedEl) {
+                updatedEl.textContent = `Diperbarui ${new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`;
+            }
+            if (notify) {
+                showToast(`Hari ini: ${sudah.length} hadir, ${activeStatusRows.length} izin/sakit/dinas, ${belum.length} belum presensi.`, belum.length ? 'info' : 'success');
+            }
+        }
+
         function getTeacherPhone(user) {
             if (!user) return '';
             const candidates = [user.no_wa, user.nowa, user.nomor_wa, user.nomorwa, user.whatsapp, user.wa, user.no_hp, user.nohp, user.hp, user.telepon, user.phone];
@@ -2787,16 +3178,19 @@ function applyDateFilters() {
             const masukNips = new Set((mockAttendanceDb || []).filter(row => {
                 return normalizeDateToDDMMYYYY(row.tanggal) === today && String(row.tipe || '').toLowerCase() === 'masuk';
             }).map(row => String(row.nip || '')));
+            const officialStatusRows = getActiveStatusKehadiranForDate(today);
+            const officialStatusByNip = new Map(officialStatusRows.map(row => [String(row.nip || ''), row]));
 
             const rows = teachers.map(user => {
                 const nip = String(user.nip || user.username || '');
                 const phoneRaw = getTeacherPhone(user);
                 const phone = normalizeWhatsAppNumber(phoneRaw);
-                return { user, nip, phoneRaw, phone, hasMasuk: masukNips.has(nip) };
+                return { user, nip, phoneRaw, phone, hasMasuk: masukNips.has(nip), officialStatus: officialStatusByNip.get(nip) || null };
             });
 
             const sudah = rows.filter(r => r.hasMasuk).length;
-            const belum = rows.filter(r => !r.hasMasuk).length;
+            const resmi = rows.filter(r => !r.hasMasuk && r.officialStatus).length;
+            const belum = rows.filter(r => !r.hasMasuk && !r.officialStatus).length;
             const noPhone = rows.filter(r => !r.phone).length;
             const el = id => document.getElementById(id);
             if (el('wa-stat-total')) el('wa-stat-total').textContent = rows.length;
@@ -2812,12 +3206,16 @@ function applyDateFilters() {
                 body.innerHTML = rows.map(row => {
                     const statusBadge = row.hasMasuk
                         ? '<span class="inline-flex px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-bold">Sudah Absen</span>'
+                        : row.officialStatus
+                        ? `<span class="inline-flex px-2.5 py-1 rounded-full bg-violet-50 text-violet-700 border border-violet-100 text-[10px] font-bold">${escapeHtml(row.officialStatus.jenis || 'Keterangan Resmi')}</span>`
                         : '<span class="inline-flex px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100 text-[10px] font-bold">Belum Absen</span>';
                     let action = '<span class="text-slate-400">-</span>';
-                    if (!row.hasMasuk && row.phone) {
+                    if (!row.hasMasuk && !row.officialStatus && row.phone) {
                         action = `<button type="button" onclick="openManualWaReminder('${escapeHtml(row.phone)}','${encodeURIComponent(String(row.user.nama || 'Guru'))}')" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold"><i class="fa-brands fa-whatsapp mr-1"></i> Buka WA</button>`;
-                    } else if (!row.hasMasuk && !row.phone) {
+                    } else if (!row.hasMasuk && !row.officialStatus && !row.phone) {
                         action = '<span class="text-[10px] font-bold text-rose-600">Isi nomor WA</span>';
+                    } else if (row.officialStatus) {
+                        action = '<span class="text-[10px] font-bold text-violet-600">Tidak dikirimi pengingat</span>';
                     }
                     return `<tr class="hover:bg-slate-50/70">
                         <td class="py-3 px-5"><div class="font-bold text-slate-800">${escapeHtml(row.user.nama || '-')}</div><div class="text-[10px] text-slate-400 font-mono">${escapeHtml(row.nip || '-')}</div></td>
@@ -3051,6 +3449,293 @@ function handleGantiPasswordSubmit(event) {
     }
 }
 		
+// ============================================================
+// KETERANGAN TIDAK MASUK: IZIN / SAKIT / TUGAS DINAS LUAR
+// ============================================================
+function getLocalIsoDate(dateObj = new Date()) {
+    return `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
+}
+
+function initializeStatusFormDates() {
+    const start = document.getElementById('status-tanggal-mulai');
+    const end = document.getElementById('status-tanggal-selesai');
+    const today = getLocalIsoDate();
+    if (start && !start.value) start.value = today;
+    if (end && !end.value) end.value = today;
+    updateStatusLetterHint();
+}
+
+function syncStatusEndDate() {
+    const start = document.getElementById('status-tanggal-mulai');
+    const end = document.getElementById('status-tanggal-selesai');
+    if (!start || !end) return;
+    end.min = start.value || '';
+    if (!end.value || (start.value && end.value < start.value)) end.value = start.value;
+}
+
+function updateStatusLetterHint() {
+    const jenis = document.getElementById('status-jenis')?.value || 'Izin';
+    const hint = document.getElementById('status-surat-hint');
+    if (!hint) return;
+    if (jenis === 'Sakit') hint.textContent = 'Surat dokter dapat dilampirkan bila tersedia. Format PDF/JPG/PNG, maksimal 5 MB.';
+    else if (jenis === 'Tugas Dinas Luar') hint.textContent = 'Disarankan melampirkan surat tugas apabila tersedia. Format PDF/JPG/PNG, maksimal 5 MB.';
+    else hint.textContent = 'Surat izin dapat dilampirkan bila tersedia. Format PDF/JPG/PNG, maksimal 5 MB.';
+}
+
+function handleStatusFileChange() {
+    const input = document.getElementById('status-surat');
+    const info = document.getElementById('status-surat-file-info');
+    if (!input || !info) return;
+    const file = input.files && input.files[0];
+    if (!file) { info.textContent = ''; return; }
+    if (file.size > 5 * 1024 * 1024) {
+        input.value = '';
+        info.textContent = 'File terlalu besar. Maksimal 5 MB.';
+        info.className = 'text-[10px] font-semibold text-rose-600';
+        return;
+    }
+    const allowed = ['application/pdf', 'image/jpeg', 'image/png'];
+    if (file.type && !allowed.includes(file.type)) {
+        input.value = '';
+        info.textContent = 'Format tidak didukung. Gunakan PDF, JPG, atau PNG.';
+        info.className = 'text-[10px] font-semibold text-rose-600';
+        return;
+    }
+    info.className = 'text-[10px] font-semibold text-violet-700';
+    info.textContent = `${file.name} • ${(file.size/1024/1024).toFixed(2)} MB`;
+}
+
+function readFileAsDataUrl(file) {
+    return new Promise((resolve, reject) => {
+        if (!file) return resolve('');
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.onerror = () => reject(new Error('File surat tidak dapat dibaca.'));
+        reader.readAsDataURL(file);
+    });
+}
+
+function isoToDdMmYyyy(value) {
+    const m = String(value || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    return m ? `${m[3]}/${m[2]}/${m[1]}` : normalizeDateToDDMMYYYY(value);
+}
+
+function ddMmYyyyToKey(value) {
+    const normalized = normalizeDateToDDMMYYYY(value);
+    const m = String(normalized || '').match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    return m ? `${m[3]}-${m[2]}-${m[1]}` : '';
+}
+
+function statusIsActiveOnDate(row, dateDdMmYyyy) {
+    const target = ddMmYyyyToKey(dateDdMmYyyy);
+    const start = ddMmYyyyToKey(row?.tanggal_mulai || row?.tanggal || '');
+    const end = ddMmYyyyToKey(row?.tanggal_selesai || row?.tanggal_mulai || row?.tanggal || '');
+    return !!target && !!start && !!end && start <= target && target <= end && String(row?.status || 'Tercatat').toLowerCase() !== 'dibatalkan';
+}
+
+function getActiveStatusKehadiranForDate(dateDdMmYyyy = getTodayDateString()) {
+    return Array.from(mockStatusKehadiranDb || []).filter(row => statusIsActiveOnDate(row, dateDdMmYyyy));
+}
+
+function statusCategory(jenis) {
+    const j = String(jenis || '').toLowerCase();
+    if (j.includes('sakit')) return 'sakit';
+    if (j.includes('dinas')) return 'dinas';
+    return 'izin';
+}
+
+function statusBadgeMarkup(jenis) {
+    const category = statusCategory(jenis);
+    if (category === 'sakit') return `<span class="inline-flex px-2 py-1 rounded-lg bg-rose-50 text-rose-700 border border-rose-100 text-[10px] font-bold">${escapeHtml(jenis || 'Sakit')}</span>`;
+    if (category === 'dinas') return `<span class="inline-flex px-2 py-1 rounded-lg bg-sky-50 text-sky-700 border border-sky-100 text-[10px] font-bold">${escapeHtml(jenis || 'Tugas Dinas Luar')}</span>`;
+    return `<span class="inline-flex px-2 py-1 rounded-lg bg-amber-50 text-amber-700 border border-amber-100 text-[10px] font-bold">${escapeHtml(jenis || 'Izin')}</span>`;
+}
+
+async function handleStatusKehadiranSubmit(event) {
+    event.preventDefault();
+    if (!currentSession || currentSession.role === 'Admin') {
+        showToast('Form keterangan hanya digunakan oleh akun guru/pegawai.', 'error');
+        return;
+    }
+
+    const jenis = document.getElementById('status-jenis').value;
+    const startIso = document.getElementById('status-tanggal-mulai').value;
+    const endIso = document.getElementById('status-tanggal-selesai').value;
+    const keterangan = document.getElementById('status-keterangan').value.trim();
+    const file = document.getElementById('status-surat').files?.[0] || null;
+    const btn = document.getElementById('btn-submit-status-kehadiran');
+
+    if (!startIso || !endIso || !keterangan) {
+        showToast('Lengkapi jenis, periode, dan keterangan.', 'error');
+        return;
+    }
+    if (endIso < startIso) {
+        showToast('Tanggal selesai tidak boleh sebelum tanggal mulai.', 'error');
+        return;
+    }
+    const diffDays = Math.floor((new Date(endIso + 'T00:00:00') - new Date(startIso + 'T00:00:00')) / 86400000) + 1;
+    if (diffDays > 31) {
+        showToast('Maksimal periode pengajuan adalah 31 hari.', 'error');
+        return;
+    }
+    if (file && file.size > 5 * 1024 * 1024) {
+        showToast('Ukuran surat maksimal 5 MB.', 'error');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Mengirim Keterangan...';
+    try {
+        const suratData = file ? await readFileAsDataUrl(file) : '';
+        const payload = {
+            nip: currentSession.nip,
+            nama: currentSession.nama,
+            jenis,
+            tanggal_mulai: isoToDdMmYyyy(startIso),
+            tanggal_selesai: isoToDdMmYyyy(endIso),
+            keterangan,
+            surat_base64: suratData,
+            surat_nama: file ? file.name : '',
+            surat_mime: file ? file.type : ''
+        };
+
+        if (IS_PREVIEW) {
+            const overlap = (mockStatusKehadiranDb || []).some(row => {
+                if (String(row.nip) !== String(payload.nip)) return false;
+                const a1 = ddMmYyyyToKey(row.tanggal_mulai), a2 = ddMmYyyyToKey(row.tanggal_selesai || row.tanggal_mulai);
+                const b1 = ddMmYyyyToKey(payload.tanggal_mulai), b2 = ddMmYyyyToKey(payload.tanggal_selesai);
+                return a1 && a2 && b1 && b2 && a1 <= b2 && b1 <= a2;
+            });
+            if (overlap) throw new Error('Sudah ada keterangan ketidakhadiran pada periode yang bertumpang tindih.');
+            mockStatusKehadiranDb.unshift({
+                id: `STATUS-${Date.now()}`,
+                timestamp: new Date().toLocaleString('id-ID'),
+                ...payload,
+                surat_link: suratData || '',
+                status: 'Tercatat'
+            });
+            localStorage.setItem('mock_status_kehadiran', JSON.stringify(mockStatusKehadiranDb));
+        } else {
+            const response = await fetch(GAS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ action: 'simpanStatusKehadiran', data: JSON.stringify(payload) })
+            });
+            const result = await response.json();
+            if (!result.success) throw new Error(result.message || 'Keterangan gagal disimpan.');
+        }
+
+        showDialog('Keterangan Tersimpan', `${jenis} untuk periode ${payload.tanggal_mulai} s.d. ${payload.tanggal_selesai} berhasil dicatat.`, 'success');
+        document.getElementById('status-keterangan').value = '';
+        document.getElementById('status-surat').value = '';
+        document.getElementById('status-surat-file-info').textContent = '';
+        initializeStatusFormDates();
+        if (IS_PREVIEW) {
+            renderStatusKehadiranHistory();
+            renderAdminTeacherAttendancePanel(false);
+        } else {
+            await fetchStatusKehadiranFromGAS();
+        }
+        loadPresensiHariIni();
+    } catch (err) {
+        showDialog('Gagal Menyimpan', String(err?.message || err), 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Kirim Keterangan Ketidakhadiran';
+    }
+}
+
+async function fetchStatusKehadiranFromGAS() {
+    if (IS_PREVIEW || !currentSession) {
+        renderStatusKehadiranHistory();
+        renderAdminStatusKehadiranPanel();
+        return mockStatusKehadiranDb;
+    }
+    try {
+        const nipParam = currentSession.role === 'Admin' ? '' : `&nip=${encodeURIComponent(currentSession.nip)}`;
+        const res = await fetch(`${GAS_URL}?action=getStatusKehadiran${nipParam}&_=${Date.now()}`, { cache: 'no-store' });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message || 'Data ketidakhadiran gagal dimuat.');
+        mockStatusKehadiranDb = Array.from(data.status || data.data || []);
+        renderStatusKehadiranHistory();
+        if (currentSession.role === 'Admin') {
+            renderAdminStatusKehadiranPanel();
+            renderAdminTeacherAttendancePanel(false);
+            refreshAdminWaStatus(false);
+        }
+        return mockStatusKehadiranDb;
+    } catch (err) {
+        console.error('Gagal memuat status ketidakhadiran:', err);
+        const body = document.getElementById('status-history-body');
+        if (body) body.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-rose-500">Endpoint status belum aktif. Pasang STATUS_KEHADIRAN_PATCH.gs pada Apps Script.</td></tr>';
+        return [];
+    }
+}
+
+function renderStatusKehadiranHistory() {
+    const body = document.getElementById('status-history-body');
+    const count = document.getElementById('status-history-count');
+    if (!body) return;
+    let rows = Array.from(mockStatusKehadiranDb || []);
+    if (currentSession && currentSession.role !== 'Admin') {
+        rows = rows.filter(row => String(row.nip || '') === String(currentSession.nip || ''));
+    }
+    rows.sort((a,b) => String(b.timestamp || b.id || '').localeCompare(String(a.timestamp || a.id || '')));
+    if (count) count.textContent = `${rows.length} Data`;
+    if (!rows.length) {
+        body.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-slate-400">Belum ada keterangan Izin, Sakit, atau Tugas Dinas Luar.</td></tr>';
+        return;
+    }
+    body.innerHTML = rows.map(row => {
+        const start = normalizeDateToDDMMYYYY(row.tanggal_mulai || row.tanggal || '') || '-';
+        const end = normalizeDateToDDMMYYYY(row.tanggal_selesai || row.tanggal_mulai || row.tanggal || '') || start;
+        const period = start === end ? start : `${start} s.d. ${end}`;
+        const surat = row.surat_link
+            ? `<a href="${escapeHtml(row.surat_link)}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-100 font-bold hover:bg-indigo-100"><i class="fa-solid fa-paperclip"></i> Buka Surat</a>`
+            : '<span class="text-slate-400">Tidak ada</span>';
+        return `<tr class="hover:bg-slate-50/70">
+            <td class="py-3 px-5"><div class="font-bold text-slate-800">${escapeHtml(row.nama || '-')}</div><div class="text-[10px] text-slate-400 font-mono">${escapeHtml(row.nip || '-')}</div></td>
+            <td class="py-3 px-5">${statusBadgeMarkup(row.jenis)}</td>
+            <td class="py-3 px-5 whitespace-nowrap font-semibold">${escapeHtml(period)}</td>
+            <td class="py-3 px-5 max-w-sm"><div class="line-clamp-3">${escapeHtml(row.keterangan || '-')}</div></td>
+            <td class="py-3 px-5">${surat}</td>
+            <td class="py-3 px-5"><span class="inline-flex px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-bold">${escapeHtml(row.status || 'Tercatat')}</span></td>
+        </tr>`;
+    }).join('');
+}
+
+function renderAdminStatusKehadiranPanel() {
+    const panel = document.getElementById('admin-status-kehadiran-panel');
+    if (!panel) return;
+    if (!currentSession || currentSession.role !== 'Admin') { panel.classList.add('hidden'); return; }
+    panel.classList.remove('hidden');
+    const rows = getActiveStatusKehadiranForDate(getTodayDateString());
+    const izin = rows.filter(r => statusCategory(r.jenis) === 'izin');
+    const sakit = rows.filter(r => statusCategory(r.jenis) === 'sakit');
+    const dinas = rows.filter(r => statusCategory(r.jenis) === 'dinas');
+    const setText = (id, text) => { const e = document.getElementById(id); if (e) e.textContent = text; };
+    setText('admin-status-count-izin', `Izin ${izin.length}`);
+    setText('admin-status-count-sakit', `Sakit ${sakit.length}`);
+    setText('admin-status-count-dinas', `Dinas ${dinas.length}`);
+    const list = document.getElementById('admin-status-kehadiran-list');
+    if (!list) return;
+    if (!rows.length) {
+        list.innerHTML = '<div class="md:col-span-2 xl:col-span-3 py-6 text-center text-xs text-slate-400">Tidak ada guru dengan keterangan Izin, Sakit, atau Tugas Dinas Luar hari ini.</div>';
+        return;
+    }
+    list.innerHTML = rows.map(row => {
+        const start = normalizeDateToDDMMYYYY(row.tanggal_mulai || '') || '-';
+        const end = normalizeDateToDDMMYYYY(row.tanggal_selesai || row.tanggal_mulai || '') || start;
+        const surat = row.surat_link ? `<a href="${escapeHtml(row.surat_link)}" target="_blank" rel="noopener" class="text-[10px] font-bold text-indigo-600 hover:text-indigo-800"><i class="fa-solid fa-paperclip mr-1"></i>Buka surat</a>` : '<span class="text-[10px] text-slate-400">Tanpa surat</span>';
+        return `<div class="rounded-xl border border-slate-100 p-4 bg-slate-50/50 min-w-0">
+            <div class="flex items-start justify-between gap-2"><div class="min-w-0"><div class="text-xs font-extrabold text-slate-800 truncate">${escapeHtml(row.nama || 'Guru')}</div><div class="text-[9px] font-mono text-slate-400 truncate">${escapeHtml(row.nip || '-')}</div></div>${statusBadgeMarkup(row.jenis)}</div>
+            <div class="mt-2 text-[10px] text-slate-500"><i class="fa-regular fa-calendar mr-1"></i>${escapeHtml(start === end ? start : `${start} s.d. ${end}`)}</div>
+            <div class="mt-2 text-[10px] text-slate-600 line-clamp-2">${escapeHtml(row.keterangan || '-')}</div>
+            <div class="mt-3 pt-2 border-t border-slate-100">${surat}</div>
+        </div>`;
+    }).join('');
+}
+
 function generateDailyAttendanceId(user, tanggal) {
     // ID tetap berdasarkan pengguna + tanggal + bulan + tahun.
     // Absen Masuk dan Pulang pada hari yang sama menggunakan ID yang sama.
@@ -3423,27 +4108,75 @@ function renderFaceExpressionPreview(expression, detected = true){
     caption.className = 'text-[10px] font-bold text-violet-700 text-center';
 }
 
+function renderPublicStatusKehadiran(rows, endpointOk = true) {
+    const configs = {
+        izin: { list: 'list-status-izin-login', count: 'jumlah-status-izin-login', empty: 'Tidak ada guru izin hari ini.' },
+        sakit: { list: 'list-status-sakit-login', count: 'jumlah-status-sakit-login', empty: 'Tidak ada guru sakit hari ini.' },
+        dinas: { list: 'list-status-dinas-login', count: 'jumlah-status-dinas-login', empty: 'Tidak ada tugas dinas luar hari ini.' }
+    };
+    const grouped = { izin: [], sakit: [], dinas: [] };
+    Array.from(rows || []).forEach(row => grouped[statusCategory(row.jenis)].push(row));
+
+    Object.keys(configs).forEach(category => {
+        const cfg = configs[category];
+        const list = document.getElementById(cfg.list);
+        const count = document.getElementById(cfg.count);
+        if (count) count.textContent = grouped[category].length;
+        if (!list) return;
+        if (!endpointOk) {
+            list.innerHTML = '<div class="text-[10px] text-rose-500">Data keterangan belum dapat dimuat.</div>';
+            return;
+        }
+        if (!grouped[category].length) {
+            list.innerHTML = `<div class="text-[10px] text-slate-400 py-1">${cfg.empty}</div>`;
+            return;
+        }
+        list.innerHTML = grouped[category].map(row => {
+            const start = normalizeDateToDDMMYYYY(row.tanggal_mulai || row.tanggal || '') || getTodayDateString();
+            const end = normalizeDateToDDMMYYYY(row.tanggal_selesai || row.tanggal_mulai || row.tanggal || '') || start;
+            const period = start === end ? start : `${start} s.d. ${end}`;
+            return `<div class="rounded-lg border border-slate-100 bg-slate-50/50 px-3 py-2 min-w-0">
+                <div class="text-[11px] font-bold text-slate-800 break-words">${escapeHtml(row.nama || 'Guru')}</div>
+                <div class="text-[9px] text-slate-400 mt-0.5"><i class="fa-regular fa-calendar mr-1"></i>${escapeHtml(period)}</div>
+            </div>`;
+        }).join('');
+    });
+}
+
 function loadPresensiHariIni(){
 
     const masukBox = document.getElementById("list-presensi-masuk");
     const pulangBox = document.getElementById("list-presensi-pulang");
+    const belumBox = document.getElementById("list-belum-presensi");
     const total = document.getElementById("total-hadir-login");
     const jumlahMasukEl = document.getElementById("jumlah-presensi-masuk");
     const jumlahPulangEl = document.getElementById("jumlah-presensi-pulang");
+    const jumlahBelumEl = document.getElementById("jumlah-belum-presensi");
+    const jumlahStatusEl = document.getElementById("jumlah-status-login");
 
     if(!masukBox || !pulangBox) return;
 
-    // Cache-buster agar browser selalu mengambil data tanggal terkini.
-    fetch(`${GAS_URL}?action=getPresensiHariIni&_=${Date.now()}`, { cache: "no-store" })
-    .then(res => res.json())
-    .then(data => {
+    // Halaman depan login mengambil presensi HARI INI sekaligus daftar guru aktif.
+    // getUsers sudah digunakan oleh panel admin; di sini dipakai untuk menghitung siapa yang BELUM presensi.
+    Promise.all([
+        fetch(`${GAS_URL}?action=getPresensiHariIni&_=${Date.now()}`, { cache: "no-store" }).then(res => res.json()),
+        fetch(`${GAS_URL}?action=getUsers&_=${Date.now()}`, { cache: "no-store" })
+            .then(res => res.json())
+            .catch(() => ({ success: false, users: [] })),
+        fetch(`${GAS_URL}?action=getStatusKehadiranHariIni&_=${Date.now()}`, { cache: "no-store" })
+            .then(res => res.json())
+            .catch(() => ({ success: false, status: [] }))
+    ])
+    .then(([data, usersData, statusData]) => {
 
         if(!data.success){
             masukBox.innerHTML = '<div class="text-xs text-rose-500">Data presensi gagal dimuat</div>';
             pulangBox.innerHTML = '<div class="text-xs text-rose-500">Data presensi gagal dimuat</div>';
+            if (belumBox) belumBox.innerHTML = '<div class="text-xs text-rose-500">Daftar guru belum dapat dimuat</div>';
             total.innerHTML = '0 Hadir';
             if (jumlahMasukEl) jumlahMasukEl.textContent = '0 Data';
             if (jumlahPulangEl) jumlahPulangEl.textContent = '0 Data';
+            if (jumlahBelumEl) jumlahBelumEl.textContent = '0 Guru';
             return;
         }
 
@@ -3490,9 +4223,95 @@ function loadPresensiHariIni(){
             )
         );
 
-        total.innerHTML = `Masuk ${masukHariIni.length} | Pulang ${pulangHariIni.length}`;
+        // Cocokkan daftar guru aktif dengan data absen masuk hari ini.
+        function normalizeTeacherKey(value){
+            return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ');
+        }
+        function getTeacherKey(obj){
+            const nip = String(obj?.nip || obj?.username || obj?.id_guru || '').trim();
+            if (nip) return `id:${normalizeTeacherKey(nip)}`;
+            return `nama:${normalizeTeacherKey(obj?.nama || obj?.name || '')}`;
+        }
+        function isActiveTeacher(user){
+            const role = String(user?.role || user?.peran || user?.level || '').trim().toLowerCase();
+            const status = String(user?.status || user?.status_akun || user?.aktif || 'aktif').trim().toLowerCase();
+            return role !== 'admin' && role !== 'administrator' && status !== 'nonaktif' && status !== 'inactive';
+        }
+
+        const attendanceKeys = new Set();
+        masukHariIni.forEach(item => {
+            const directKey = getTeacherKey(item);
+            if (directKey !== 'nama:') attendanceKeys.add(directKey);
+            const nameKey = `nama:${normalizeTeacherKey(item?.nama || item?.name || '')}`;
+            if (nameKey !== 'nama:') attendanceKeys.add(nameKey);
+        });
+
+        const statusTodayRaw = statusData && statusData.success ? Array.from(statusData.status || statusData.data || []) : [];
+        const statusTodayMap = new Map();
+        statusTodayRaw.forEach(row => {
+            const key = getTeacherKey(row);
+            if (key !== 'nama:' && !statusTodayMap.has(key)) statusTodayMap.set(key, row);
+            else {
+                const nameKey = `nama:${normalizeTeacherKey(row?.nama || row?.name || '')}`;
+                if (nameKey !== 'nama:' && !statusTodayMap.has(nameKey)) statusTodayMap.set(nameKey, row);
+            }
+        });
+        const statusToday = Array.from(new Set(statusTodayMap.values()));
+        publicStatusKehadiranHariIni = statusToday;
+        const officialStatusKeys = new Set();
+        statusToday.forEach(row => {
+            const key = getTeacherKey(row);
+            if (key !== 'nama:') officialStatusKeys.add(key);
+            const nameKey = `nama:${normalizeTeacherKey(row?.nama || row?.name || '')}`;
+            if (nameKey !== 'nama:') officialStatusKeys.add(nameKey);
+        });
+
+        // Bila getUsers gagal, panel Masuk/Pulang tetap berjalan; panel Belum menampilkan pesan khusus.
+        const activeTeachers = (usersData && usersData.success ? Array.from(usersData.users || []) : [])
+            .filter(isActiveTeacher)
+            .filter((user, index, arr) => {
+                const key = getTeacherKey(user);
+                return arr.findIndex(other => getTeacherKey(other) === key) === index;
+            })
+            .sort((a, b) => String(a.nama || a.name || '').localeCompare(String(b.nama || b.name || ''), 'id', { sensitivity: 'base' }));
+
+        const belumPresensi = activeTeachers.filter(user => {
+            const key = getTeacherKey(user);
+            const nameKey = `nama:${normalizeTeacherKey(user?.nama || user?.name || '')}`;
+            return !attendanceKeys.has(key) && !attendanceKeys.has(nameKey) && !officialStatusKeys.has(key) && !officialStatusKeys.has(nameKey);
+        });
+
+        total.innerHTML = usersData && usersData.success
+            ? `Belum ${belumPresensi.length} | Masuk ${masukHariIni.length} | Keterangan ${statusToday.length} | Pulang ${pulangHariIni.length}`
+            : `Masuk ${masukHariIni.length} | Keterangan ${statusToday.length} | Pulang ${pulangHariIni.length}`;
         if (jumlahMasukEl) jumlahMasukEl.textContent = `${masukHariIni.length} Data`;
         if (jumlahPulangEl) jumlahPulangEl.textContent = `${pulangHariIni.length} Data`;
+        if (jumlahBelumEl) jumlahBelumEl.textContent = `${belumPresensi.length} Guru`;
+        if (jumlahStatusEl) jumlahStatusEl.textContent = `${statusToday.length} Guru`;
+        renderPublicStatusKehadiran(statusToday, !!(statusData && statusData.success));
+
+        if (belumBox) {
+            if (!usersData || !usersData.success) {
+                belumBox.innerHTML = '<div class="bg-white border border-amber-100 rounded-xl p-4 text-xs text-amber-700">Daftar guru belum dapat dimuat. Pastikan endpoint <b>getUsers</b> pada Apps Script dapat diakses.</div>';
+            } else if (!activeTeachers.length) {
+                belumBox.innerHTML = '<div class="bg-white border border-slate-100 rounded-xl p-4 text-xs text-slate-400 text-center">Belum ada data guru aktif.</div>';
+            } else if (!belumPresensi.length) {
+                belumBox.innerHTML = '<div class="bg-white border border-emerald-100 rounded-xl p-5 text-center"><div class="w-10 h-10 mx-auto rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2"><i class="fa-solid fa-check"></i></div><div class="text-xs font-bold text-emerald-700">Semua guru sudah hadir atau memiliki keterangan resmi.</div></div>';
+            } else {
+                belumBox.innerHTML = belumPresensi.map(user => {
+                    const nama = String(user?.nama || user?.name || user?.username || 'Guru');
+                    const initials = nama.trim().split(/\s+/).filter(Boolean).slice(0, 2).map(part => part.charAt(0)).join('').toUpperCase() || 'G';
+                    return `<div class="bg-white border border-amber-100 rounded-xl p-3 flex items-center gap-3 shadow-sm">
+                        <div class="w-9 h-9 shrink-0 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-[11px] font-extrabold">${escapeHtml(initials)}</div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-800 break-words">${escapeHtml(nama)}</div>
+                            <div class="text-[10px] text-amber-700 font-semibold mt-0.5">Belum absen masuk hari ini</div>
+                        </div>
+                        <span class="shrink-0 px-2 py-1 rounded-lg bg-amber-50 text-amber-700 border border-amber-100 text-[9px] font-extrabold">BELUM</span>
+                    </div>`;
+                }).join('');
+            }
+        }
 
         function card(p, status){
             const photoUrl = normalizePhotoUrl(p.foto_link);
@@ -3560,8 +4379,12 @@ function loadPresensiHariIni(){
         console.error("Gagal memuat presensi hari ini:", err);
         masukBox.innerHTML = '<div class="text-xs text-rose-500">Koneksi ke server gagal</div>';
         pulangBox.innerHTML = '<div class="text-xs text-rose-500">Koneksi ke server gagal</div>';
+        if (belumBox) belumBox.innerHTML = '<div class="text-xs text-rose-500">Koneksi daftar guru gagal</div>';
         if (jumlahMasukEl) jumlahMasukEl.textContent = '0 Data';
         if (jumlahPulangEl) jumlahPulangEl.textContent = '0 Data';
+        if (jumlahBelumEl) jumlahBelumEl.textContent = '0 Guru';
+        if (jumlahStatusEl) jumlahStatusEl.textContent = '0 Guru';
+        renderPublicStatusKehadiran([], false);
     });
 
 }
