@@ -82,134 +82,96 @@
         </div>
     </div>
 
-    <!-- ==================== LOGIN SCREEN ==================== -->
-    <section id="login-screen" class="flex-1 flex items-center justify-center px-4 py-12 bg-gradient-to-br from-slate-50 via-indigo-50/20 to-slate-100">
-    <div class="w-full max-w-5xl flex flex-col gap-6 items-center">
-
-        <!-- LOGIN -->
-        <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl max-w-md w-full mx-auto flex flex-col gap-6">
-            <div class="text-center flex flex-col items-center gap-3">
+    <!-- ==================== LANDING / LOGIN SCREEN ==================== -->
+    <section id="login-screen" class="flex-1 px-4 py-8 sm:py-12 bg-gradient-to-br from-slate-50 via-indigo-50/30 to-slate-100">
+        <div class="w-full max-w-6xl mx-auto flex flex-col gap-6">
+            <div class="text-center flex flex-col items-center gap-3 mb-1">
                 <div class="bg-indigo-600 text-white p-3.5 rounded-2xl shadow-lg shadow-indigo-100">
                     <i class="fa-solid fa-graduation-cap text-2xl"></i>
                 </div>
                 <div>
-                    <h2 class="text-xl font-bold text-slate-900">E-Presensi & Jurnal Guru</h2>
-                    <p class="text-xs text-indigo-600 font-semibold uppercase tracking-wider mt-1">Premium Performance Pro V2</p>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">E-Presensi & Jurnal Guru</h1>
+                    <p class="text-xs text-indigo-600 font-bold uppercase tracking-wider mt-1">SMK CANDA BHIRAWA PARE</p>
                 </div>
             </div>
 
-            <form id="form-login" onsubmit="handleLoginSubmit(event)" class="flex flex-col gap-4">
-                <div class="flex flex-col gap-1">
-                    <label class="text-xs font-bold text-slate-500">Username / NIP</label>
-                    <input type="text" id="login-username" required placeholder="Masukkan username" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-indigo-500 font-medium">
-                </div>
-
-                <div class="flex flex-col gap-1">
-                    <label class="text-xs font-bold text-slate-500">Password</label>
-                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-indigo-500 font-medium">
-                </div>
-
-                <button type="submit" id="btn-login-submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-indigo-100">
-                    Masuk ke Sistem
+            <!-- MENU UTAMA DEPAN: VERTIKAL -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-start">
+                <aside class="lg:col-span-3 w-full">
+                    <div class="flex flex-col gap-3 lg:sticky lg:top-6">
+                <button id="landing-btn-presensi" type="button" onclick="showLandingPanel('presensi')" class="landing-menu-btn w-full p-5 rounded-2xl border border-slate-200 bg-white text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-xl bg-emerald-600 text-white flex items-center justify-center"><i class="fa-solid fa-calendar-check text-lg"></i></div>
+                        <div><p class="font-extrabold text-slate-900">Presensi Hari Ini</p><p class="text-[10px] text-slate-500 mt-0.5">Lihat masuk, pulang & belum presensi</p></div>
+                    </div>
                 </button>
-            </form>
-        </div>
+                <button id="landing-btn-status" type="button" onclick="showLandingPanel('status')" class="landing-menu-btn w-full p-5 rounded-2xl border border-slate-200 bg-white text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-xl bg-violet-600 text-white flex items-center justify-center"><i class="fa-solid fa-file-circle-check text-lg"></i></div>
+                        <div><p class="font-extrabold text-slate-900">Izin / Sakit / Dinas</p><p class="text-[10px] text-slate-500 mt-0.5">Keterangan tidak hadir hari ini</p></div>
+                    </div>
+                </button>
+                <button id="landing-btn-login" type="button" onclick="showLandingPanel('login')" class="landing-menu-btn w-full p-5 rounded-2xl border-2 border-indigo-500 bg-indigo-50 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-xl bg-indigo-600 text-white flex items-center justify-center"><i class="fa-solid fa-right-to-bracket text-lg"></i></div>
+                        <div><p class="font-extrabold text-slate-900">Login</p><p class="text-[10px] text-slate-500 mt-0.5">Masuk ke sistem guru / admin</p></div>
+                    </div>
+                </button>
+                    </div>
+                </aside>
 
-        <!-- PRESENSI HARI INI -->
-        <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl w-full">
-            <div class="flex items-center justify-between mb-5">
-                <div>
-                    <h2 class="text-xl font-bold text-slate-900">
-                        Presensi Hari Ini
-                    </h2>
-                    <p class="text-xs text-slate-500">
-                        Status kehadiran guru hari ini secara real-time
-                    </p>
-                </div>
-                <div class="bg-emerald-100 text-emerald-700 px-3 py-2 rounded-xl text-xs font-bold" id="total-hadir-login">
-                    0 Hadir
-                </div>
-            </div>
+                <div class="lg:col-span-9 w-full min-w-0">
 
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 items-start">
-                <!-- PANEL KIRI: GURU YANG BELUM PRESENSI MASUK -->
-                <div class="min-w-0 bg-amber-50/40 border border-amber-100 rounded-2xl p-4">
-                    <div class="flex items-center justify-between gap-2 mb-3">
-                        <div>
-                            <h3 class="text-sm font-bold text-amber-700">🟠 BELUM PRESENSI</h3>
-                            <p class="text-[10px] text-slate-500 mt-0.5">Guru aktif yang belum absen masuk dan tidak memiliki keterangan resmi hari ini</p>
-                        </div>
-                        <span id="jumlah-belum-presensi" class="shrink-0 text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 px-2 py-1 rounded-full">0 Guru</span>
-                    </div>
-                    <div id="list-belum-presensi" class="space-y-2 max-h-[460px] overflow-y-auto pr-1">
-                        <div class="text-xs text-slate-400">Memuat daftar guru...</div>
-                    </div>
+            <!-- PANEL PRESENSI HARI INI -->
+            <div id="landing-panel-presensi" class="landing-panel hidden bg-white p-5 sm:p-7 rounded-3xl border border-slate-100 shadow-xl w-full">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                    <div><h2 class="text-xl font-bold text-slate-900">Presensi Hari Ini</h2><p class="text-xs text-slate-500">Status kehadiran guru hari ini secara real-time</p></div>
+                    <div class="bg-emerald-100 text-emerald-700 px-3 py-2 rounded-xl text-xs font-bold self-start" id="total-hadir-login">0 Hadir</div>
                 </div>
-
-                <!-- GURU YANG SUDAH PRESENSI MASUK -->
-                <div class="min-w-0">
-                    <div class="flex items-center justify-between gap-2 mb-3">
-                        <h3 class="text-sm font-bold text-emerald-600">🟢 ABSEN MASUK</h3>
-                        <span id="jumlah-presensi-masuk" class="shrink-0 text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 px-2 py-1 rounded-full">0 Data</span>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 items-start">
+                    <div class="min-w-0 bg-amber-50/40 border border-amber-100 rounded-2xl p-4">
+                        <div class="flex items-center justify-between gap-2 mb-3"><div><h3 class="text-sm font-bold text-amber-700">🟠 BELUM PRESENSI</h3><p class="text-[10px] text-slate-500 mt-0.5">Guru aktif yang belum absen masuk dan tanpa keterangan resmi</p></div><span id="jumlah-belum-presensi" class="shrink-0 text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 px-2 py-1 rounded-full">0 Guru</span></div>
+                        <div id="list-belum-presensi" class="space-y-2 max-h-[460px] overflow-y-auto pr-1"><div class="text-xs text-slate-400">Memuat daftar guru...</div></div>
                     </div>
-                    <div id="list-presensi-masuk" class="space-y-3 max-h-[460px] overflow-y-auto pr-1">
-                        Memuat data...
+                    <div class="min-w-0">
+                        <div class="flex items-center justify-between gap-2 mb-3"><h3 class="text-sm font-bold text-emerald-600">🟢 ABSEN MASUK</h3><span id="jumlah-presensi-masuk" class="shrink-0 text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 px-2 py-1 rounded-full">0 Data</span></div>
+                        <div id="list-presensi-masuk" class="space-y-3 max-h-[460px] overflow-y-auto pr-1">Memuat data...</div>
                     </div>
-                </div>
-
-                <!-- GURU YANG SUDAH PRESENSI PULANG -->
-                <div class="min-w-0 md:col-span-2 xl:col-span-1">
-                    <div class="flex items-center justify-between gap-2 mb-3">
-                        <h3 class="text-sm font-bold text-blue-600">🔵 ABSEN PULANG</h3>
-                        <span id="jumlah-presensi-pulang" class="shrink-0 text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-100 px-2 py-1 rounded-full">0 Data</span>
-                    </div>
-                    <div id="list-presensi-pulang" class="space-y-3 max-h-[460px] overflow-y-auto pr-1">
-                        Memuat data...
+                    <div class="min-w-0 md:col-span-2 xl:col-span-1">
+                        <div class="flex items-center justify-between gap-2 mb-3"><h3 class="text-sm font-bold text-blue-600">🔵 ABSEN PULANG</h3><span id="jumlah-presensi-pulang" class="shrink-0 text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-100 px-2 py-1 rounded-full">0 Data</span></div>
+                        <div id="list-presensi-pulang" class="space-y-3 max-h-[460px] overflow-y-auto pr-1">Memuat data...</div>
                     </div>
                 </div>
             </div>
 
-            <!-- GURU IZIN / SAKIT / TUGAS DINAS LUAR HARI INI -->
-            <div class="mt-6 rounded-2xl border border-violet-100 bg-violet-50/30 p-4">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                    <div>
-                        <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                            <i class="fa-solid fa-clipboard-user text-violet-600"></i> Izin, Sakit & Tugas Dinas Luar Hari Ini
-                        </h3>
-                        <p class="text-[10px] text-slate-500 mt-1">Menampilkan guru yang tidak melakukan presensi masuk karena memiliki keterangan resmi.</p>
-                    </div>
-                    <span id="jumlah-status-login" class="shrink-0 text-[10px] font-bold bg-violet-100 text-violet-800 border border-violet-200 px-2.5 py-1.5 rounded-full">0 Guru</span>
+            <!-- PANEL IZIN / SAKIT / DINAS -->
+            <div id="landing-panel-status" class="landing-panel hidden bg-white p-5 sm:p-7 rounded-3xl border border-slate-100 shadow-xl w-full">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                    <div><h2 class="text-xl font-bold text-slate-900">Izin / Sakit / Dinas Hari Ini</h2><p class="text-xs text-slate-500">Daftar keterangan resmi guru yang tidak melakukan presensi masuk</p></div>
+                    <span id="jumlah-status-login" class="shrink-0 text-[10px] font-bold bg-violet-100 text-violet-800 border border-violet-200 px-2.5 py-1.5 rounded-full self-start">0 Guru</span>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div class="bg-white rounded-xl border border-amber-100 p-3">
-                        <div class="flex items-center justify-between gap-2 mb-2">
-                            <span class="text-xs font-bold text-amber-700"><i class="fa-solid fa-envelope-open-text mr-1"></i> IZIN</span>
-                            <span id="jumlah-status-izin-login" class="text-[9px] font-extrabold bg-amber-50 text-amber-700 px-2 py-1 rounded-full">0</span>
-                        </div>
-                        <div id="list-status-izin-login" class="space-y-2"><div class="text-[10px] text-slate-400">Memuat...</div></div>
-                    </div>
-                    <div class="bg-white rounded-xl border border-rose-100 p-3">
-                        <div class="flex items-center justify-between gap-2 mb-2">
-                            <span class="text-xs font-bold text-rose-700"><i class="fa-solid fa-notes-medical mr-1"></i> SAKIT</span>
-                            <span id="jumlah-status-sakit-login" class="text-[9px] font-extrabold bg-rose-50 text-rose-700 px-2 py-1 rounded-full">0</span>
-                        </div>
-                        <div id="list-status-sakit-login" class="space-y-2"><div class="text-[10px] text-slate-400">Memuat...</div></div>
-                    </div>
-                    <div class="bg-white rounded-xl border border-sky-100 p-3">
-                        <div class="flex items-center justify-between gap-2 mb-2">
-                            <span class="text-xs font-bold text-sky-700"><i class="fa-solid fa-briefcase mr-1"></i> DINAS LUAR</span>
-                            <span id="jumlah-status-dinas-login" class="text-[9px] font-extrabold bg-sky-50 text-sky-700 px-2 py-1 rounded-full">0</span>
-                        </div>
-                        <div id="list-status-dinas-login" class="space-y-2"><div class="text-[10px] text-slate-400">Memuat...</div></div>
-                    </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-amber-50/40 rounded-2xl border border-amber-100 p-4"><div class="flex items-center justify-between gap-2 mb-3"><span class="text-xs font-bold text-amber-700"><i class="fa-solid fa-envelope-open-text mr-1"></i> IZIN</span><span id="jumlah-status-izin-login" class="text-[9px] font-extrabold bg-amber-100 text-amber-700 px-2 py-1 rounded-full">0</span></div><div id="list-status-izin-login" class="space-y-2"><div class="text-[10px] text-slate-400">Memuat...</div></div></div>
+                    <div class="bg-rose-50/40 rounded-2xl border border-rose-100 p-4"><div class="flex items-center justify-between gap-2 mb-3"><span class="text-xs font-bold text-rose-700"><i class="fa-solid fa-notes-medical mr-1"></i> SAKIT</span><span id="jumlah-status-sakit-login" class="text-[9px] font-extrabold bg-rose-100 text-rose-700 px-2 py-1 rounded-full">0</span></div><div id="list-status-sakit-login" class="space-y-2"><div class="text-[10px] text-slate-400">Memuat...</div></div></div>
+                    <div class="bg-sky-50/40 rounded-2xl border border-sky-100 p-4"><div class="flex items-center justify-between gap-2 mb-3"><span class="text-xs font-bold text-sky-700"><i class="fa-solid fa-briefcase mr-1"></i> DINAS LUAR</span><span id="jumlah-status-dinas-login" class="text-[9px] font-extrabold bg-sky-100 text-sky-700 px-2 py-1 rounded-full">0</span></div><div id="list-status-dinas-login" class="space-y-2"><div class="text-[10px] text-slate-400">Memuat...</div></div></div>
                 </div>
-                <p class="text-[9px] text-slate-400 mt-3"><i class="fa-solid fa-shield-halved mr-1"></i>Halaman publik hanya menampilkan nama dan jenis ketidakhadiran. Alasan serta surat pendukung tidak ditampilkan.</p>
+                <p class="text-[9px] text-slate-400 mt-4"><i class="fa-solid fa-shield-halved mr-1"></i>Halaman publik hanya menampilkan nama dan jenis ketidakhadiran. Alasan serta surat pendukung tidak ditampilkan.</p>
+            </div>
+
+            <!-- PANEL LOGIN -->
+            <div id="landing-panel-login" class="landing-panel bg-white p-8 rounded-3xl border border-slate-100 shadow-xl max-w-md w-full mx-auto flex flex-col gap-6">
+                <div class="text-center"><h2 class="text-xl font-bold text-slate-900">Login Sistem</h2><p class="text-xs text-slate-500 mt-1">Masuk menggunakan akun Guru / Admin</p></div>
+                <form id="form-login" onsubmit="handleLoginSubmit(event)" class="flex flex-col gap-4">
+                    <div class="flex flex-col gap-1"><label class="text-xs font-bold text-slate-500">Username / NIP</label><input type="text" id="login-username" required placeholder="Masukkan username" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-indigo-500 font-medium"></div>
+                    <div class="flex flex-col gap-1"><label class="text-xs font-bold text-slate-500">Password</label><input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-indigo-500 font-medium"></div>
+                    <button type="submit" id="btn-login-submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-indigo-100"><i class="fa-solid fa-right-to-bracket mr-1"></i> Masuk ke Sistem</button>
+                </form>
+            </div>
+
+                </div>
             </div>
         </div>
-
-
-    </div>
-</section>
+    </section>
 
     <!-- ==================== MAIN WORKSPACE ==================== -->
     <div id="main-workspace" class="hidden flex-1 flex flex-col">
@@ -440,7 +402,10 @@
                         <canvas id="output-canvas" class="absolute top-0 left-0 w-full h-full object-cover scale-x-[-1]"></canvas>
                         <img id="captured-photo-overlay" src="" alt="Foto presensi yang telah diambil" class="absolute inset-0 w-full h-full object-cover hidden z-20">
                         <div id="captured-photo-badge" class="absolute top-3 left-3 hidden z-30 px-3 py-1.5 rounded-full bg-emerald-600/90 text-white text-xs font-bold shadow-lg">
-                            <i class="fa-solid fa-circle-check"></i> Foto siap dikirim
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Kerapian AI siap
+                        </div>
+                        <div id="captured-expression-badge" class="absolute top-3 right-3 hidden z-30 px-3 py-1.5 rounded-full bg-violet-600/95 text-white text-xs font-bold shadow-lg">
+                            <i class="fa-regular fa-face-smile"></i> Ekspresi: Netral
                         </div>
 
                         <!-- Panel Loading / Error / Panduan Izin Kamera -->
@@ -489,12 +454,13 @@
                             <i class="fa-solid fa-clock"></i> Tombol Pulang aktif mulai pukul 14.00 WIB.
                         </p>
 
-                        <!-- Dropdown Pilihan 5 Cabang/Lokasi Sekolah -->
+                        <!-- Kampus dipilih otomatis dari GPS berdasarkan lokasi terdekat -->
                         <div class="flex flex-col gap-1">
-                            <label class="text-xs font-bold text-slate-500">Cabang Lokasi Absensi</label>
-                            <select id="presensi-cabang-sekolah" onchange="recalculateGeofenceSelection()" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-indigo-500 font-bold text-indigo-700 bg-white">
-                                <!-- Lokasi dinamis akan dimuat oleh javascript -->
+                            <label class="text-xs font-bold text-slate-500">Kampus Terdeteksi Otomatis</label>
+                            <select id="presensi-cabang-sekolah" disabled class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-indigo-700 bg-slate-50 cursor-not-allowed">
+                                <option value="">Mendeteksi kampus terdekat dari GPS...</option>
                             </select>
+                            <p class="text-[9px] text-slate-400 mt-1">Sistem memilih kampus dengan jarak GPS paling dekat. Presensi hanya valid jika jaraknya maksimal <b>200 meter</b>.</p>
                         </div>
 
                         <div class="flex flex-col gap-1">
@@ -515,28 +481,38 @@
                             <p class="text-[9px] text-slate-400 mt-1">Untuk Izin, Sakit, atau Tugas Dinas Luar gunakan menu <b>Izin / Sakit / Dinas</b>.</p>
                         </div>
 
-                        <!-- Informasi ekspresi wajah dari Face Mesh -->
+                        <!-- Prediksi Kerapian AI dari foto presensi -->
                         <div class="p-3 rounded-xl bg-violet-50 border border-violet-100 flex items-start gap-2.5">
-                            <div class="text-violet-600 mt-0.5"><i class="fa-solid fa-face-smile text-base"></i></div>
+                            <div class="text-violet-600 mt-0.5"><i class="fa-solid fa-wand-magic-sparkles text-base"></i></div>
                             <div class="min-w-0 w-full">
-                                <span class="text-xs font-bold text-slate-700">Ekspresi Wajah</span>
-                                <p id="face-expression-display" class="text-[11px] text-violet-700 font-semibold mt-0.5">Menunggu wajah terdeteksi...</p>
-                                <p class="text-[9px] text-slate-400 mt-0.5">Kategori: Netral, Sedih, Gembira, Tersenyum, atau Mulut Terbuka.</p>
-
-                                <div id="face-expression-preview" class="mt-2 flex flex-col sm:flex-row sm:items-start gap-3">
-                                    <div class="shrink-0 flex flex-col items-center gap-1">
-                                        <div id="face-expression-avatar" class="w-16 h-16 rounded-2xl bg-white border border-violet-200 shadow-sm overflow-hidden flex items-center justify-center">
-                                            <span class="text-[10px] text-slate-400">Preview</span>
-                                        </div>
-                                        <p id="face-expression-current-caption" class="text-[10px] font-bold text-violet-700 text-center">Menunggu</p>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-[10px] text-slate-500 font-semibold mb-1">Contoh gambar ekspresi:</p>
-                                        <div id="face-expression-legend" class="grid grid-cols-5 gap-1.5"></div>
-                                    </div>
+                                <span class="text-xs font-bold text-slate-700">Kerapian AI</span>
+                                <p id="face-expression-display" class="text-[11px] text-slate-500 font-semibold mt-0.5">Menunggu wajah terdeteksi...</p>
+                                <div id="face-expression-preview" class="mt-2 grid grid-cols-3 gap-2">
+                                    <div class="rounded-xl border border-emerald-100 bg-white p-2 text-center"><i class="fa-solid fa-circle-check text-emerald-600"></i><p class="text-[10px] font-bold text-emerald-700 mt-1">Rapi</p></div>
+                                    <div class="rounded-xl border border-amber-100 bg-white p-2 text-center"><i class="fa-solid fa-circle-minus text-amber-500"></i><p class="text-[10px] font-bold text-amber-700 mt-1">Cukup Rapi</p></div>
+                                    <div class="rounded-xl border border-rose-100 bg-white p-2 text-center"><i class="fa-solid fa-circle-xmark text-rose-500"></i><p class="text-[10px] font-bold text-rose-700 mt-1">Tidak Rapi</p></div>
                                 </div>
+                                <p class="text-[9px] text-slate-400 mt-2">Prediksi otomatis menilai kesiapan tampilan foto berdasarkan posisi wajah, kemiringan, dan framing kamera.</p>
+                            </div>
+                        </div>
 
-                                <p class="text-[9px] text-slate-400 mt-2">Hasil merupakan perkiraan otomatis berdasarkan titik wajah.</p>
+                        <!-- Prediksi Ekspresi Wajah dari Face Mesh -->
+                        <div class="p-3 rounded-xl bg-sky-50 border border-sky-100 flex items-start gap-2.5">
+                            <div class="text-sky-600 mt-0.5"><i class="fa-regular fa-face-smile text-base"></i></div>
+                            <div class="min-w-0 w-full">
+                                <span class="text-xs font-bold text-slate-700">Prediksi Ekspresi Wajah</span>
+                                <p id="photo-expression-display" class="text-[11px] text-slate-500 font-semibold mt-0.5">Menunggu wajah terdeteksi...</p>
+                                <div class="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-center">
+                                    <div class="rounded-lg border border-sky-100 bg-white px-2 py-1.5 text-[9px] font-bold text-slate-600">😠 Marah</div>
+                                    <div class="rounded-lg border border-sky-100 bg-white px-2 py-1.5 text-[9px] font-bold text-slate-600">🙁 Cemberut</div>
+                                    <div class="rounded-lg border border-sky-100 bg-white px-2 py-1.5 text-[9px] font-bold text-slate-600">☹️ Sedih</div>
+                                    <div class="rounded-lg border border-sky-100 bg-white px-2 py-1.5 text-[9px] font-bold text-slate-600">😄 Gembira</div>
+                                    <div class="rounded-lg border border-sky-100 bg-white px-2 py-1.5 text-[9px] font-bold text-slate-600">🙂 Senyum</div>
+                                    <div class="rounded-lg border border-sky-100 bg-white px-2 py-1.5 text-[9px] font-bold text-slate-600">😮 Mulut Terbuka</div>
+                                    <div class="rounded-lg border border-sky-100 bg-white px-2 py-1.5 text-[9px] font-bold text-slate-600">😐 Netral</div>
+                                    <div class="rounded-lg border border-sky-100 bg-white px-2 py-1.5 text-[9px] font-bold text-slate-600">😕 Setengah Sedih</div>
+                                </div>
+                                <p class="text-[9px] text-slate-400 mt-2">Prediksi berbasis perubahan landmark wajah saat foto diambil. Hasil merupakan perkiraan ekspresi visual, bukan penilaian kondisi emosi seseorang.</p>
                             </div>
                         </div>
 
@@ -1038,7 +1014,7 @@
         //  SAKLAR DEPLOYMENT & KONFIGURASI UTAMA
         // ==========================================
         const IS_PREVIEW = false; 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbw4t62xoui4N9Ppy9aR4tEYqgIQVe2YhVsET5MkTPkjcts8Cc70oYYDFjwGyYXUSJHI3A/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycby3gm9vQ_46lyGQCC4KCieOO6LowVmmAWRNsi7_836zB2ri_6Rco8v4IpsN4mzYQzg4zg/exec";
         const ATTENDANCE_RADIUS_METERS = 200;
 
         // State Global Aplikasi
@@ -1060,18 +1036,22 @@
         let cameraActive = false;
         let isFaceDetected = false;
         let isWithinAttendanceRadius = false;
-        let globalFaceExpression = "Netral";
+        let globalFaceExpression = "Cukup Rapi";
         let capturedFaceExpression = "";
         let faceExpressionHistory = [];
+        let globalPhotoExpression = "Netral";
+        let capturedPhotoExpression = "";
+        let photoExpressionHistory = [];
         let adminReportSummaryRows = [];
         let adminReportDetailRows = [];
         let adminReportPeriodLabel = "";
 
-        // Titik Koordinat Sekolah yang Sedang Terpilih
-        let selectedSchoolLat = -7.766140;
-        let selectedSchoolLng = 112.191157;
+        // Titik kampus hasil deteksi GPS otomatis
+        let selectedSchoolLat = null;
+        let selectedSchoolLng = null;
         let selectedSchoolRadius = ATTENDANCE_RADIUS_METERS;
-        let selectedSchoolName = "Kampus Utama (Pusat)";
+        let selectedSchoolName = "Belum terdeteksi";
+        let selectedSchoolIndex = -1;
 
         // Inisialisasi Data Dummy Awal untuk Mode Preview
         function initializeMockData() {
@@ -1102,13 +1082,8 @@
             mockLocationsDb = mockLocationsDb.map(loc => ({ ...loc, radius: ATTENDANCE_RADIUS_METERS }));
             localStorage.setItem("mock_locations", JSON.stringify(mockLocationsDb));
 
-            // Set Pilihan Awal
-            selectedSchoolLat = mockLocationsDb[0].latitude;
-            selectedSchoolLng = mockLocationsDb[0].longitude;
-            selectedSchoolRadius = ATTENDANCE_RADIUS_METERS;
-            selectedSchoolName = mockLocationsDb[0].nama;
-
-            // Populate Dropdown Lokasi Cabang
+            // Kampus tidak dipilih manual. GPS akan memilih titik terdekat.
+            resetDetectedSchool();
             renderLocationsDropdown();
 
             // 3. Database Presensi
@@ -1161,35 +1136,84 @@
             }
         }
 
-        // Dropdown Renderer
-        function renderLocationsDropdown() {
-            const selectEl = document.getElementById('presensi-cabang-sekolah');
-            if (selectEl) {
-                selectEl.innerHTML = '';
-                mockLocationsDb.forEach((loc, index) => {
-                    const opt = document.createElement('option');
-                    opt.value = index;
-                    opt.innerText = `${loc.nama} (Radius: ${ATTENDANCE_RADIUS_METERS}m)`;
-                    selectEl.appendChild(opt);
-                });
-            }
+        function resetDetectedSchool() {
+            selectedSchoolLat = null;
+            selectedSchoolLng = null;
+            selectedSchoolRadius = ATTENDANCE_RADIUS_METERS;
+            selectedSchoolName = "Belum terdeteksi";
+            selectedSchoolIndex = -1;
+            isWithinAttendanceRadius = false;
+
+            const label = document.getElementById('geofence-selected-label');
+            if (label) label.innerText = 'GPS Mendeteksi Kampus Terdekat';
         }
 
-        // Trigger ulang saat cabang dipilih di dropdown
-        function recalculateGeofenceSelection() {
+        // Dropdown hanya sebagai tampilan hasil deteksi. Pengguna tidak memilih kampus secara manual.
+        function renderLocationsDropdown() {
             const selectEl = document.getElementById('presensi-cabang-sekolah');
-            const selectedIndex = parseInt(selectEl.value);
-            const loc = mockLocationsDb[selectedIndex];
+            if (!selectEl) return;
 
-            selectedSchoolLat = loc.latitude;
-            selectedSchoolLng = loc.longitude;
+            selectEl.innerHTML = '';
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.innerText = 'Mendeteksi kampus terdekat dari GPS...';
+            selectEl.appendChild(placeholder);
+
+            mockLocationsDb.forEach((loc, index) => {
+                const opt = document.createElement('option');
+                opt.value = index;
+                opt.innerText = `${loc.nama} • otomatis GPS`;
+                selectEl.appendChild(opt);
+            });
+
+            if (selectedSchoolIndex >= 0) selectEl.value = String(selectedSchoolIndex);
+            else selectEl.value = '';
+        }
+
+        // Cari kampus yang jaraknya paling dekat dari koordinat perangkat.
+        function findNearestSchool(lat, lng) {
+            if (!Array.isArray(mockLocationsDb) || mockLocationsDb.length === 0) return null;
+
+            let nearest = null;
+            mockLocationsDb.forEach((loc, index) => {
+                const schoolLat = Number(loc.latitude);
+                const schoolLng = Number(loc.longitude);
+                if (!Number.isFinite(schoolLat) || !Number.isFinite(schoolLng)) return;
+
+                const distance = calculateDistance(lat, lng, schoolLat, schoolLng);
+                if (!nearest || distance < nearest.distance) {
+                    nearest = { loc, index, distance };
+                }
+            });
+            return nearest;
+        }
+
+        // Terapkan kampus terdekat sebagai lokasi presensi otomatis.
+        function selectNearestSchoolFromGps(lat, lng) {
+            const nearest = findNearestSchool(lat, lng);
+            if (!nearest) {
+                resetDetectedSchool();
+                renderLocationsDropdown();
+                return null;
+            }
+
+            selectedSchoolIndex = nearest.index;
+            selectedSchoolLat = Number(nearest.loc.latitude);
+            selectedSchoolLng = Number(nearest.loc.longitude);
             selectedSchoolRadius = ATTENDANCE_RADIUS_METERS;
-            selectedSchoolName = loc.nama;
+            selectedSchoolName = nearest.loc.nama || `Kampus ${nearest.index + 1}`;
 
-            // Update keterangan form
-            document.getElementById('geofence-selected-label').innerText = `GPS ${loc.nama}`;
+            const selectEl = document.getElementById('presensi-cabang-sekolah');
+            if (selectEl) selectEl.value = String(selectedSchoolIndex);
 
-            // Panggil ulang tracker posisi koordinat GPS
+            const label = document.getElementById('geofence-selected-label');
+            if (label) label.innerText = `GPS • ${selectedSchoolName}`;
+
+            return nearest;
+        }
+
+        // Dipertahankan untuk kompatibilitas kode lama; pilihan tetap dikunci oleh GPS.
+        function recalculateGeofenceSelection() {
             requestUserLocation();
         }
 
@@ -1202,6 +1226,7 @@
         const submitPresensiBtn = document.getElementById('btn-submit-presensi');
         const capturedPhotoOverlay = document.getElementById('captured-photo-overlay');
         const capturedPhotoBadge = document.getElementById('captured-photo-badge');
+        const capturedExpressionBadge = document.getElementById('captured-expression-badge');
         const gpsDisplay = document.getElementById('gps-coordinates');
 
         // Custom Toast Notification Maker
@@ -1295,6 +1320,30 @@
         }
         setInterval(updateClock, 1000);
         updateClock();
+
+
+        // Menu utama tampilan depan
+        function showLandingPanel(panelId = 'login') {
+            const panels = ['presensi', 'status', 'login'];
+            panels.forEach(id => {
+                const panel = document.getElementById(`landing-panel-${id}`);
+                const btn = document.getElementById(`landing-btn-${id}`);
+                if (panel) panel.classList.toggle('hidden', id !== panelId);
+                if (btn) {
+                    const activeClasses = id === 'presensi'
+                        ? ['border-emerald-500','bg-emerald-50']
+                        : id === 'status'
+                            ? ['border-violet-500','bg-violet-50']
+                            : ['border-indigo-500','bg-indigo-50'];
+                    btn.classList.remove('border-emerald-500','bg-emerald-50','border-violet-500','bg-violet-50','border-indigo-500','bg-indigo-50','border-2');
+                    btn.classList.add('border','border-slate-200','bg-white');
+                    if (id === panelId) {
+                        btn.classList.remove('border','border-slate-200','bg-white');
+                        btn.classList.add('border-2', ...activeClasses);
+                    }
+                }
+            });
+        }
 
         // Login Processing
         function handleLoginSubmit(event) {
@@ -1414,6 +1463,7 @@
             document.getElementById('main-workspace').classList.add('hidden');
             document.getElementById('login-username').value = "";
             document.getElementById('login-password').value = "";
+            showLandingPanel('login');
             showToast("Anda telah keluar secara aman.", "info");
         }
 
@@ -1487,11 +1537,7 @@
                         }));
                         localStorage.setItem("mock_locations", JSON.stringify(mockLocationsDb));
                         
-                        selectedSchoolLat = mockLocationsDb[0].latitude;
-                        selectedSchoolLng = mockLocationsDb[0].longitude;
-                        selectedSchoolRadius = ATTENDANCE_RADIUS_METERS;
-                        selectedSchoolName = mockLocationsDb[0].nama;
-
+                        resetDetectedSchool();
                         renderLocationsDropdown();
                         requestUserLocation();
                     }
@@ -1627,8 +1673,17 @@ function formatTanggalRekap(value){
                         globalCoordinates = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
                         globalMapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
                         
-                        // Hitung Jarak ke Titik Sekolah Terpilih
-                        const distance = calculateDistance(lat, lng, selectedSchoolLat, selectedSchoolLng);
+                        // Bandingkan GPS perangkat dengan SEMUA kampus, lalu pilih yang paling dekat.
+                        const nearest = selectNearestSchoolFromGps(lat, lng);
+                        if (!nearest) {
+                            globalDistance = '-';
+                            isWithinAttendanceRadius = false;
+                            gpsDisplay.innerHTML = `<span class="text-rose-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> Data koordinat kampus belum tersedia.</span><br><span class="text-xs text-rose-500 font-medium">Tidak dapat memvalidasi radius presensi.</span>`;
+                            if (callback) callback(false);
+                            return;
+                        }
+
+                        const distance = nearest.distance;
                         globalDistance = `${distance.toFixed(1)} m`;
 
                         // Tampilkan link maps mengarah ke posisi perangkat guru
@@ -1639,12 +1694,13 @@ function formatTanggalRekap(value){
                         isWithinAttendanceRadius = isInside;
 
                         if (isInside) {
-                            gpsDisplay.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Perangkat Terkunci di Koordinat: ${globalCoordinates}</span><br><span class="text-xs text-slate-500 font-medium">(Cabang: ${selectedSchoolName} | Jarak: ${globalDistance} | Batas: ${ATTENDANCE_RADIUS_METERS} m - Terbuka)</span>`;
+                            gpsDisplay.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Kampus terdeteksi: ${selectedSchoolName}</span><br><span class="text-xs text-slate-500 font-medium">GPS: ${globalCoordinates} | Jarak: ${globalDistance} | Maksimal: ${ATTENDANCE_RADIUS_METERS} m</span><br><span class="text-[10px] text-emerald-600 font-bold">Kampus terdekat dipilih otomatis • Area presensi valid</span>`;
                         } else {
-                            gpsDisplay.innerHTML = `<span class="text-rose-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> Perangkat Terkunci di Koordinat: ${globalCoordinates}</span><br><span class="text-xs text-rose-500 font-bold">(Di Luar Batas Cabang: ${selectedSchoolName} | Jarak: ${globalDistance} / Batas: ${ATTENDANCE_RADIUS_METERS} m)</span>`;
-                            showToast(`Presensi ditolak: jarak ${globalDistance}, sedangkan batas maksimal ${ATTENDANCE_RADIUS_METERS} meter.`, "error");
+                            gpsDisplay.innerHTML = `<span class="text-rose-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> Tidak ada kampus dalam radius ${ATTENDANCE_RADIUS_METERS} m.</span><br><span class="text-xs text-rose-500 font-bold">Kampus terdekat: ${selectedSchoolName} | Jarak: ${globalDistance}</span><br><span class="text-[10px] text-slate-500 font-medium">GPS: ${globalCoordinates}</span>`;
+                            showToast(`Di luar area presensi. Kampus terdekat ${selectedSchoolName} berjarak ${globalDistance}; maksimal ${ATTENDANCE_RADIUS_METERS} meter.`, "error");
                         }
 
+                        updatePresensiButtonState();
                         if (callback) callback(isInside);
                     },
                     (error) => {
@@ -1653,16 +1709,26 @@ function formatTanggalRekap(value){
 
                         if (IS_PREVIEW) {
                             // Simulasi hanya di mode preview, bukan pada aplikasi produksi.
-                            const simLat = selectedSchoolLat + 0.00015;
-                            const simLng = selectedSchoolLng - 0.00012;
+                            const previewBase = mockLocationsDb.find(loc => Number.isFinite(Number(loc.latitude)) && Number.isFinite(Number(loc.longitude)));
+                            if (!previewBase) {
+                                resetDetectedSchool();
+                                gpsDisplay.innerHTML = `<span class="text-rose-600 font-bold">Data kampus simulasi tidak tersedia.</span>`;
+                                updatePresensiButtonState();
+                                if (callback) callback(false);
+                                return;
+                            }
+                            const simLat = Number(previewBase.latitude) + 0.00015;
+                            const simLng = Number(previewBase.longitude) - 0.00012;
                             globalCoordinates = `${simLat.toFixed(6)}, ${simLng.toFixed(6)}`;
-                            const distance = calculateDistance(simLat, simLng, selectedSchoolLat, selectedSchoolLng);
-                            globalDistance = `${distance.toFixed(1)} m`;
+                            const nearest = selectNearestSchoolFromGps(simLat, simLng);
+                            const distance = nearest ? nearest.distance : Infinity;
+                            globalDistance = Number.isFinite(distance) ? `${distance.toFixed(1)} m` : '-';
                             globalMapsLink = `https://www.google.com/maps?q=${simLat},${simLng}`;
-                            isWithinAttendanceRadius = distance <= ATTENDANCE_RADIUS_METERS;
+                            isWithinAttendanceRadius = Number.isFinite(distance) && distance <= ATTENDANCE_RADIUS_METERS;
                             document.getElementById('gps-map-link-container').classList.remove('hidden');
                             document.getElementById('gps-map-link').href = globalMapsLink;
-                            gpsDisplay.innerHTML = `<span class="text-amber-600 font-bold">Simulasi Koordinat Perangkat: ${globalCoordinates}</span><br><span class="text-[10px] text-slate-400 font-medium">(Jarak Simulasi: ${globalDistance} | Batas: ${ATTENDANCE_RADIUS_METERS} m)</span>`;
+                            gpsDisplay.innerHTML = `<span class="text-amber-600 font-bold">Simulasi GPS • Kampus: ${selectedSchoolName}</span><br><span class="text-[10px] text-slate-400 font-medium">Koordinat: ${globalCoordinates} | Jarak: ${globalDistance} | Batas: ${ATTENDANCE_RADIUS_METERS} m</span>`;
+                            updatePresensiButtonState();
                             if (callback) callback(isWithinAttendanceRadius);
                             return;
                         }
@@ -1672,6 +1738,7 @@ function formatTanggalRekap(value){
                         globalMapsLink = "#";
                         gpsDisplay.innerHTML = `<span class="text-rose-600 font-bold"><i class="fa-solid fa-location-crosshairs"></i> GPS gagal diakses.</span><br><span class="text-[10px] text-rose-500 font-medium">Aktifkan izin lokasi untuk memverifikasi radius ${ATTENDANCE_RADIUS_METERS} meter.</span>`;
                         showToast("Presensi tidak dapat dikirim tanpa verifikasi GPS.", "error");
+                        updatePresensiButtonState();
                         if (callback) callback(false);
                     },
                     { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
@@ -1682,6 +1749,7 @@ function formatTanggalRekap(value){
                 globalMapsLink = "#";
                 isWithinAttendanceRadius = false;
                 gpsDisplay.innerHTML = `<span class="text-rose-600 font-bold">GPS tidak didukung oleh browser Anda.</span><br><span class="text-[10px] text-rose-500">Presensi membutuhkan verifikasi radius ${ATTENDANCE_RADIUS_METERS} meter.</span>`;
+                updatePresensiButtonState();
                 if (callback) callback(false);
             }
         }
@@ -1827,8 +1895,11 @@ function formatTanggalRekap(value){
             
             isFaceDetected = false;
             faceExpressionHistory = [];
-            globalFaceExpression = "Netral";
+            globalFaceExpression = "Cukup Rapi";
+            photoExpressionHistory = [];
+            globalPhotoExpression = "Netral";
             updateFaceExpressionDisplay('Kamera tidak aktif', false);
+            updatePhotoExpressionDisplay('Kamera tidak aktif', false);
             clearCapturedPhoto(false);
             updatePresensiButtonState();
             
@@ -1841,51 +1912,163 @@ function formatTanggalRekap(value){
         }
 
         function estimateFaceExpression(landmarks) {
-            if (!landmarks || landmarks.length < 455) return "Netral";
+            // Kerapian AI = kualitas tampilan foto presensi, bukan penilaian daya tarik fisik.
+            if (!landmarks || landmarks.length < 455) return "Tidak Rapi";
 
-            const faceWidth = Math.max(landmarkDistance(landmarks[234], landmarks[454]), 0.0001);
-            const mouthWidth = Math.max(landmarkDistance(landmarks[61], landmarks[291]), 0.0001);
-            const mouthOpenRatio = landmarkDistance(landmarks[13], landmarks[14]) / mouthWidth;
-            const mouthWidthRatio = mouthWidth / faceWidth;
+            const xs = landmarks.map(p => p.x || 0);
+            const ys = landmarks.map(p => p.y || 0);
+            const minX = Math.min(...xs), maxX = Math.max(...xs);
+            const minY = Math.min(...ys), maxY = Math.max(...ys);
+            const faceWidth = Math.max(maxX - minX, 0.001);
+            const faceHeight = Math.max(maxY - minY, 0.001);
+            const centerX = (minX + maxX) / 2;
+            const centerY = (minY + maxY) / 2;
 
-            // Nilai positif menandakan sudut mulut lebih terangkat (senyum),
-            // sedangkan nilai negatif menandakan sudut mulut lebih turun (sedih).
-            const lipCenterY = ((landmarks[13].y || 0) + (landmarks[14].y || 0)) / 2;
-            const mouthCornerY = ((landmarks[61].y || 0) + (landmarks[291].y || 0)) / 2;
-            const smileCurve = (lipCenterY - mouthCornerY) / mouthWidth;
+            const leftEye = landmarks[33], rightEye = landmarks[263];
+            const rollDeg = Math.abs(Math.atan2((rightEye.y-leftEye.y), (rightEye.x-leftEye.x)) * 180 / Math.PI);
+            const centerOffset = Math.hypot(centerX - 0.5, centerY - 0.48);
 
-            // Mulut terbuka diprioritaskan agar tidak salah terbaca sebagai senyum lebar.
-            if (mouthOpenRatio > 0.30) return "Mulut Terbuka";
+            let score = 100;
+            // Wajah terlalu kecil/besar menurunkan kualitas framing.
+            if (faceWidth < 0.22) score -= 30;
+            else if (faceWidth < 0.28) score -= 15;
+            if (faceWidth > 0.72) score -= 22;
+            else if (faceWidth > 0.64) score -= 10;
 
-            // Gembira = senyum kuat/lebar. Tersenyum = senyum ringan sampai sedang.
-            if (smileCurve > 0.060 && mouthWidthRatio > 0.345) return "Gembira";
-            if (smileCurve > 0.025 && mouthWidthRatio > 0.315) return "Tersenyum";
+            if (faceHeight < 0.28) score -= 15;
+            if (centerOffset > 0.18) score -= 30;
+            else if (centerOffset > 0.11) score -= 15;
 
-            // Sedih diperkirakan dari kedua sudut mulut yang turun ketika mulut tertutup.
-            if (smileCurve < -0.022 && mouthOpenRatio < 0.20) return "Sedih";
+            if (rollDeg > 18) score -= 30;
+            else if (rollDeg > 10) score -= 15;
 
-            return "Netral";
+            // Wajah yang terlalu dekat tepi frame dianggap belum siap foto.
+            if (minX < 0.025 || maxX > 0.975 || minY < 0.02 || maxY > 0.98) score -= 20;
+
+            if (score >= 82) return "Rapi";
+            if (score >= 62) return "Cukup Rapi";
+            return "Tidak Rapi";
         }
 
         function stabilizeFaceExpression(expression) {
             faceExpressionHistory.push(expression);
             if (faceExpressionHistory.length > 8) faceExpressionHistory.shift();
-
-            const counts = faceExpressionHistory.reduce((acc, item) => {
-                acc[item] = (acc[item] || 0) + 1;
-                return acc;
-            }, {});
-            return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] || "Netral";
+            const weights = { 'Tidak Rapi': 0, 'Cukup Rapi': 1, 'Rapi': 2 };
+            const avg = faceExpressionHistory.reduce((sum, item) => sum + (weights[item] ?? 1), 0) / Math.max(faceExpressionHistory.length, 1);
+            return avg >= 1.5 ? 'Rapi' : avg >= 0.55 ? 'Cukup Rapi' : 'Tidak Rapi';
         }
 
         function updateFaceExpressionDisplay(text, detected = true) {
             const display = document.getElementById('face-expression-display');
             if (!display) return;
-            display.textContent = detected ? `Terdeteksi: ${text}` : text;
-            display.className = detected
-                ? 'text-[11px] text-violet-700 font-semibold mt-0.5'
-                : 'text-[11px] text-slate-500 font-semibold mt-0.5';
-            renderFaceExpressionPreview(text, detected);
+            if (!detected) {
+                display.textContent = text;
+                display.className = 'text-[11px] text-slate-500 font-semibold mt-0.5';
+                return;
+            }
+            display.textContent = `Prediksi: ${text}`;
+            display.className = text === 'Rapi'
+                ? 'text-[11px] text-emerald-700 font-extrabold mt-0.5'
+                : text === 'Cukup Rapi'
+                    ? 'text-[11px] text-amber-700 font-extrabold mt-0.5'
+                    : 'text-[11px] text-rose-700 font-extrabold mt-0.5';
+        }
+
+        function expressionRatio(numerator, denominator) {
+            const d = Number(denominator) || 0;
+            return d > 0.00001 ? Number(numerator || 0) / d : 0;
+        }
+
+        function estimatePhotoExpression(landmarks) {
+            // Heuristik ekspresi visual dari landmark MediaPipe Face Mesh.
+            // Hasil bukan diagnosis emosi dan hanya dipakai sebagai label pada foto presensi.
+            if (!landmarks || landmarks.length < 455) return 'Netral';
+
+            const faceHeight = Math.max(landmarkDistance(landmarks[10], landmarks[152]), 0.001);
+            const mouthWidth = Math.max(landmarkDistance(landmarks[61], landmarks[291]), 0.001);
+            const mouthGap = landmarkDistance(landmarks[13], landmarks[14]);
+            const mouthOpen = expressionRatio(mouthGap, mouthWidth);
+
+            const mouthCenterY = ((landmarks[13]?.y || 0) + (landmarks[14]?.y || 0)) / 2;
+            const cornerY = ((landmarks[61]?.y || 0) + (landmarks[291]?.y || 0)) / 2;
+            const smileLift = expressionRatio(mouthCenterY - cornerY, faceHeight);
+            const frownDrop = expressionRatio(cornerY - mouthCenterY, faceHeight);
+
+            const leftEyeWidth = Math.max(landmarkDistance(landmarks[33], landmarks[133]), 0.001);
+            const rightEyeWidth = Math.max(landmarkDistance(landmarks[362], landmarks[263]), 0.001);
+            const leftEyeOpen = expressionRatio(landmarkDistance(landmarks[159], landmarks[145]), leftEyeWidth);
+            const rightEyeOpen = expressionRatio(landmarkDistance(landmarks[386], landmarks[374]), rightEyeWidth);
+            const eyeOpen = (leftEyeOpen + rightEyeOpen) / 2;
+
+            const leftBrowGap = expressionRatio(landmarkDistance(landmarks[107], landmarks[159]), faceHeight);
+            const rightBrowGap = expressionRatio(landmarkDistance(landmarks[336], landmarks[386]), faceHeight);
+            const browGap = (leftBrowGap + rightBrowGap) / 2;
+
+            // Arah alis bagian dalam membantu membedakan marah vs sedih.
+            const angryInnerDrop = (
+                ((landmarks[107]?.y || 0) - (landmarks[70]?.y || 0)) +
+                ((landmarks[336]?.y || 0) - (landmarks[300]?.y || 0))
+            ) / (2 * faceHeight);
+            const sadInnerRaise = -angryInnerDrop;
+
+            const lipPressed = mouthOpen < 0.055;
+            const strongSmile = smileLift > 0.018;
+            const mildSmile = smileLift > 0.007;
+            const strongFrown = frownDrop > 0.018;
+            const mildFrown = frownDrop > 0.007;
+            const browTense = browGap < 0.078;
+            const angryBrows = angryInnerDrop > 0.010;
+            const sadBrows = sadInnerRaise > 0.009 || browGap > 0.128;
+
+            // Prioritas dibuat agar kategori yang mirip tetap dapat dibedakan.
+            if (strongSmile && (mouthOpen > 0.105 || eyeOpen < 0.205)) return 'Gembira';
+            if (mildSmile && mouthOpen < 0.165) return 'Senyum';
+            if (mouthOpen > 0.205 && !mildSmile) return 'Mulut Terbuka';
+            if (angryBrows && browTense && (lipPressed || mildFrown)) return 'Marah';
+            if (strongFrown && sadBrows) return 'Sedih';
+            if (strongFrown) return 'Cemberut';
+            if (mildFrown && sadBrows) return 'Setengah Sedih';
+            if (mildFrown) return 'Cemberut';
+            if (sadBrows && frownDrop > 0.003) return 'Setengah Sedih';
+            return 'Netral';
+        }
+
+        function stabilizePhotoExpression(expression) {
+            const value = expression || 'Netral';
+            photoExpressionHistory.push(value);
+            if (photoExpressionHistory.length > 9) photoExpressionHistory.shift();
+
+            const counts = {};
+            photoExpressionHistory.forEach(item => { counts[item] = (counts[item] || 0) + 1; });
+            // Beri sedikit bobot tambahan pada frame terbaru supaya UI tidak terlalu lambat berubah.
+            counts[value] = (counts[value] || 0) + 0.75;
+            return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] || value;
+        }
+
+        function getPhotoExpressionEmoji(expression) {
+            const icons = {
+                'Marah': '😠',
+                'Cemberut': '🙁',
+                'Sedih': '☹️',
+                'Gembira': '😄',
+                'Senyum': '🙂',
+                'Mulut Terbuka': '😮',
+                'Netral': '😐',
+                'Setengah Sedih': '😕'
+            };
+            return icons[expression] || '😐';
+        }
+
+        function updatePhotoExpressionDisplay(text, detected = true) {
+            const display = document.getElementById('photo-expression-display');
+            if (!display) return;
+            if (!detected) {
+                display.textContent = text;
+                display.className = 'text-[11px] text-slate-500 font-semibold mt-0.5';
+                return;
+            }
+            display.textContent = `Prediksi: ${getPhotoExpressionEmoji(text)} ${text}`;
+            display.className = 'text-[11px] text-sky-700 font-extrabold mt-0.5';
         }
 
         function onFaceMeshResults(results) {
@@ -1909,7 +2092,11 @@ function formatTanggalRekap(value){
 
                 const landmarks = results.multiFaceLandmarks[0];
                 globalFaceExpression = stabilizeFaceExpression(estimateFaceExpression(landmarks));
-                if (!globalBase64Photo) updateFaceExpressionDisplay(globalFaceExpression, true);
+                globalPhotoExpression = stabilizePhotoExpression(estimatePhotoExpression(landmarks));
+                if (!globalBase64Photo) {
+                    updateFaceExpressionDisplay(globalFaceExpression, true);
+                    updatePhotoExpressionDisplay(globalPhotoExpression, true);
+                }
 
                 canvasCtx.strokeStyle = 'rgba(16, 185, 129, 0.45)';
                 canvasCtx.lineWidth = 0.6;
@@ -1929,7 +2116,11 @@ function formatTanggalRekap(value){
             } else {
                 isFaceDetected = false;
                 faceExpressionHistory = [];
-                if (!globalBase64Photo) updateFaceExpressionDisplay('Menunggu wajah terdeteksi...', false);
+                photoExpressionHistory = [];
+                if (!globalBase64Photo) {
+                    updateFaceExpressionDisplay('Menunggu wajah terdeteksi...', false);
+                    updatePhotoExpressionDisplay('Menunggu wajah terdeteksi...', false);
+                }
                 faceMeshStatusBadge.className = "px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1.5 animate-pulse";
                 faceMeshStatusBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Menunggu Deteksi...`;
                 wrapper.className = "relative w-full aspect-video bg-slate-950 rounded-xl overflow-hidden border-2 border-slate-200 transition-all duration-300";
@@ -1993,14 +2184,17 @@ function formatTanggalRekap(value){
             globalBase64Photo = '';
             capturedPhotoTakenAt = null;
             capturedFaceExpression = '';
+            capturedPhotoExpression = '';
             if (cameraActive && isFaceDetected) {
                 updateFaceExpressionDisplay(globalFaceExpression, true);
+                updatePhotoExpressionDisplay(globalPhotoExpression, true);
             }
             if (capturedPhotoOverlay) {
                 capturedPhotoOverlay.src = '';
                 capturedPhotoOverlay.classList.add('hidden');
             }
             if (capturedPhotoBadge) capturedPhotoBadge.classList.add('hidden');
+            if (capturedExpressionBadge) capturedExpressionBadge.classList.add('hidden');
             if (showMessage) showToast('Foto dibatalkan. Silakan ambil foto kembali.', 'info');
         }
 
@@ -2032,18 +2226,33 @@ function formatTanggalRekap(value){
 
             globalBase64Photo = finalCanvas.toDataURL('image/jpeg', 0.85);
             capturedPhotoTakenAt = new Date();
-            capturedFaceExpression = globalFaceExpression || "Netral";
-            updateFaceExpressionDisplay(`${capturedFaceExpression} (tersimpan bersama foto)`, true);
+            capturedFaceExpression = globalFaceExpression || "Cukup Rapi";
+            capturedPhotoExpression = globalPhotoExpression || "Netral";
+            updateFaceExpressionDisplay(`${capturedFaceExpression}`, true);
+            updatePhotoExpressionDisplay(`${capturedPhotoExpression}`, true);
 
             if (capturedPhotoOverlay) {
                 capturedPhotoOverlay.src = globalBase64Photo;
                 capturedPhotoOverlay.classList.remove('hidden');
             }
-            if (capturedPhotoBadge) capturedPhotoBadge.classList.remove('hidden');
+            if (capturedPhotoBadge) {
+                capturedPhotoBadge.classList.remove('hidden');
+                capturedPhotoBadge.className = capturedFaceExpression === 'Rapi'
+                    ? 'absolute top-3 left-3 z-30 px-3 py-1.5 rounded-full bg-emerald-600/95 text-white text-xs font-bold shadow-lg'
+                    : capturedFaceExpression === 'Cukup Rapi'
+                        ? 'absolute top-3 left-3 z-30 px-3 py-1.5 rounded-full bg-amber-500/95 text-white text-xs font-bold shadow-lg'
+                        : 'absolute top-3 left-3 z-30 px-3 py-1.5 rounded-full bg-rose-600/95 text-white text-xs font-bold shadow-lg';
+                capturedPhotoBadge.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> ${capturedFaceExpression}`;
+            }
+
+            if (capturedExpressionBadge) {
+                capturedExpressionBadge.classList.remove('hidden');
+                capturedExpressionBadge.innerHTML = `<span class="mr-1">${getPhotoExpressionEmoji(capturedPhotoExpression)}</span> Ekspresi: ${capturedPhotoExpression}`;
+            }
 
             faceMeshStatusBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5';
-            faceMeshStatusBadge.innerHTML = '<i class="fa-solid fa-camera"></i> Foto Berhasil Diambil';
-            showToast(`Foto berhasil diambil. Ekspresi: ${capturedFaceExpression}.`, 'success');
+            faceMeshStatusBadge.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> ${capturedFaceExpression} • ${getPhotoExpressionEmoji(capturedPhotoExpression)} ${capturedPhotoExpression}`;
+            showToast(`Foto berhasil diambil. Kerapian: ${capturedFaceExpression}. Ekspresi: ${capturedPhotoExpression}.`, 'success');
             updatePresensiButtonState();
         }
 
@@ -2142,10 +2351,14 @@ function formatTanggalRekap(value){
                 capturePhotoBtn.innerHTML = '<i class="fa-solid fa-lock"></i> Menunggu Wajah';
             }
 
-            if (globalBase64Photo) {
+            if (globalBase64Photo && isWithinAttendanceRadius) {
                 submitPresensiBtn.disabled = false;
                 submitPresensiBtn.className = 'w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer';
                 submitPresensiBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Kirim Absen ${selectedTipe}`;
+            } else if (globalBase64Photo && !isWithinAttendanceRadius) {
+                submitPresensiBtn.disabled = true;
+                submitPresensiBtn.className = 'w-full bg-rose-100 text-rose-500 py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 cursor-not-allowed border border-rose-200';
+                submitPresensiBtn.innerHTML = `<i class="fa-solid fa-location-dot"></i> Di Luar Radius ${ATTENDANCE_RADIUS_METERS} m`;
             } else {
                 submitPresensiBtn.disabled = true;
                 submitPresensiBtn.className = 'w-full bg-slate-200 text-slate-400 py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 cursor-not-allowed';
@@ -2183,7 +2396,7 @@ function formatTanggalRekap(value){
                 if (!success || !isWithinAttendanceRadius) {
                     isSubmittingPresensi = false;
                     updatePresensiButtonState();
-                    showDialog("Di Luar Radius Presensi", `Presensi hanya dapat dilakukan dalam radius ${ATTENDANCE_RADIUS_METERS} meter dari lokasi yang dipilih. Jarak perangkat saat ini: ${globalDistance}.`, "error");
+                    showDialog("Di Luar Radius Presensi", `Presensi hanya dapat dilakukan maksimal ${ATTENDANCE_RADIUS_METERS} meter dari kampus terdekat. Kampus terdeteksi: ${selectedSchoolName}. Jarak perangkat: ${globalDistance}.`, "error");
                     return;
                 }
 
@@ -2192,7 +2405,8 @@ function formatTanggalRekap(value){
 
                 const tipeVal = document.querySelector('input[name="tipe_absen"]:checked').value;
                 const ketVal = document.getElementById('presensi-keterangan').value;
-                const ekspresiVal = capturedFaceExpression || globalFaceExpression || "Netral";
+                const kerapianVal = capturedFaceExpression || globalFaceExpression || "Cukup Rapi";
+                const ekspresiVal = capturedPhotoExpression || globalPhotoExpression || "Netral";
                 const timestamp = new Date();
 
                 // Formulasi string tanggal yang konsisten (dd/mm/yyyy)
@@ -2206,10 +2420,12 @@ function formatTanggalRekap(value){
                     nip: currentSession.nip,
                     nama: currentSession.nama,
                     tipe: tipeVal,
-                    // Ekspresi juga ditambahkan ke keterangan agar tetap tersimpan pada backend lama.
-                    keterangan: `${ketVal} | Ekspresi: ${ekspresiVal}`,
+                    // Kerapian AI ikut disimpan pada keterangan agar tetap kompatibel dengan backend lama.
+                    keterangan: `${ketVal} | Kerapian AI: ${kerapianVal} | Ekspresi: ${ekspresiVal}`,
                     status_keterangan: ketVal,
-                    ekspresi: ekspresiVal,
+                    kerapian_ai: kerapianVal,
+                    ekspresi_wajah: ekspresiVal,
+                    ekspresi_ai: ekspresiVal,
                     lokasi: globalCoordinates, // Lokasi GPS Perangkat Guru (Lat, Lng)
                     jarak: globalDistance,      // Jarak ke sekolah
                     nama_lokasi: selectedSchoolName, // Nama cabang sekolah terpilih
@@ -2245,7 +2461,8 @@ checkTodayAttendanceStatus();
                             jam: timestamp.toLocaleTimeString('id-ID') + " WIB",
                             tipe: payload.tipe,
                             keterangan: payload.keterangan,
-                            ekspresi: payload.ekspresi,
+                            kerapian_ai: payload.kerapian_ai,
+                            ekspresi_wajah: payload.ekspresi_wajah,
                             lokasi: payload.lokasi,
                             jarak: payload.jarak,
                             nama_lokasi: payload.nama_lokasi,
@@ -2285,7 +2502,8 @@ checkTodayAttendanceStatus();
                                 jam: timestamp.toLocaleTimeString('id-ID') + " WIB",
                                 tipe: payload.tipe,
                                 keterangan: payload.keterangan,
-                                ekspresi: payload.ekspresi,
+                                kerapian_ai: payload.kerapian_ai,
+                                ekspresi_wajah: payload.ekspresi_wajah,
                                 lokasi: payload.lokasi,
                                 jarak: payload.jarak,
                                 nama_lokasi: payload.nama_lokasi,
@@ -2764,10 +2982,12 @@ function applyDateFilters() {
             }
 
             let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "NIP,Nama Guru,Tanggal,Waktu,Tipe Presensi,Status Keterangan,Koordinat GPS Perangkat,Jarak (Meter),Lokasi Cabang,Link Google Maps,Link Foto\r\n";
+            csvContent += "NIP,Nama Guru,Tanggal,Waktu,Tipe Presensi,Status Keterangan,Kerapian AI,Ekspresi Wajah,Koordinat GPS Perangkat,Jarak (Meter),Lokasi Cabang,Link Google Maps,Link Foto\r\n";
 
             mockAttendanceDb.forEach(row => {
-                const line = `"${row.nip}","${row.nama}","${row.tanggal}","${row.jam}","${row.tipe}","${row.keterangan}","${row.lokasi}","${row.jarak}","${row.nama_lokasi}","${row.link_map}","${row.foto_link}"`;
+                const csvKerapian = getAttendanceExpression(row);
+                const csvEkspresi = getAttendancePhotoExpression(row);
+                const line = `"${row.nip}","${row.nama}","${row.tanggal}","${row.jam}","${row.tipe}","${row.keterangan}","${csvKerapian}","${csvEkspresi}","${row.lokasi}","${row.jarak}","${row.nama_lokasi}","${row.link_map}","${row.foto_link}"`;
                 csvContent += line + "\r\n";
             });
 
@@ -3886,8 +4106,7 @@ async function updateAbsenceButtonState(){
 }
 
 document.addEventListener("DOMContentLoaded",()=>{
-    renderExpressionLegend();
-    renderFaceExpressionPreview('', false);
+    showLandingPanel('login');
     setTimeout(updateAbsenceButtonState,1500);
 });
 
@@ -3919,62 +4138,89 @@ function formatJamIndonesia(value){
 function normalizeExpressionLabel(value){
     const raw = String(value || '').trim();
     const normalized = raw.toLowerCase();
-
     if (!raw || normalized === '-' || normalized === 'null' || normalized === 'undefined') return '';
-    if (normalized.includes('mulut') && normalized.includes('terbuka')) return 'Mulut Terbuka';
-    if (normalized.includes('gembira')) return 'Gembira';
-    if (normalized.includes('tersenyum') || normalized === 'senyum') return 'Tersenyum';
-    if (normalized.includes('sedih')) return 'Sedih';
-    if (normalized.includes('netral')) return 'Netral';
-
-    // Placeholder backend lama dianggap belum memiliki nilai ekspresi.
-    if (normalized.includes('tidak terdeteksi') || normalized.includes('belum terdeteksi')) return '';
-    return raw;
+    if (normalized.includes('tidak rapi')) return 'Tidak Rapi';
+    if (normalized.includes('cukup rapi')) return 'Cukup Rapi';
+    if (normalized === 'rapi' || normalized.includes(' rapi')) return 'Rapi';
+    return '';
 }
 
 function getAttendanceExpression(item){
-    // Mendukung beberapa kemungkinan nama kolom dari Google Sheet / Apps Script.
+    // Nama fungsi dipertahankan agar kompatibel dengan renderer lama; isinya sekarang Kerapian AI.
     const directCandidates = [
-        item?.ekspresi,
-        item?.Ekspresi,
-        item?.expression,
-        item?.keterangan_ekspresi,
-        item?.['Keterangan Ekspresi']
+        item?.kerapian_ai,
+        item?.KerapianAI,
+        item?.kerapian,
+        item?.['Kerapian AI']
     ];
-
     for (const candidate of directCandidates) {
         const normalized = normalizeExpressionLabel(candidate);
         if (normalized) return normalized;
     }
-
-    // Backend lama menyimpan ekspresi di dalam kolom keterangan.
-    const descriptionCandidates = [
-        item?.keterangan,
-        item?.Keterangan,
-        item?.status_keterangan,
-        item?.catatan
-    ];
-
+    const descriptionCandidates = [item?.keterangan, item?.Keterangan, item?.status_keterangan, item?.catatan];
     for (const description of descriptionCandidates) {
-        const match = String(description || '').match(/Ekspresi\s*[:=-]\s*([^|,;]+)/i);
+        const match = String(description || '').match(/Kerapian\s*AI\s*[:=-]\s*([^|,;]+)/i);
         if (match) {
             const normalized = normalizeExpressionLabel(match[1]);
             if (normalized) return normalized;
         }
     }
+    return 'Cukup Rapi';
+}
 
-    // Data lama tanpa kolom ekspresi menggunakan Netral sebagai tampilan aman.
+function normalizePhotoExpressionLabel(value){
+    const raw = String(value ?? '').trim();
+    const normalized = raw.toLowerCase();
+    if (!raw || normalized === '-' || normalized === 'null' || normalized === 'undefined') return '';
+    if (normalized.includes('setengah sedih')) return 'Setengah Sedih';
+    if (normalized.includes('mulut terbuka')) return 'Mulut Terbuka';
+    if (normalized.includes('cemberut')) return 'Cemberut';
+    if (normalized.includes('gembira')) return 'Gembira';
+    if (normalized.includes('senyum') || normalized.includes('tersenyum')) return 'Senyum';
+    if (normalized.includes('marah')) return 'Marah';
+    if (normalized.includes('sedih')) return 'Sedih';
+    if (normalized.includes('netral')) return 'Netral';
+    return '';
+}
+
+function getAttendancePhotoExpression(item){
+    const directCandidates = [
+        item?.ekspresi_wajah,
+        item?.ekspresi_ai,
+        item?.EkspresiWajah,
+        item?.ekspresi,
+        item?.['Ekspresi Wajah'],
+        item?.['Ekspresi']
+    ];
+    for (const candidate of directCandidates) {
+        const normalized = normalizePhotoExpressionLabel(candidate);
+        if (normalized) return normalized;
+    }
+    const descriptionCandidates = [item?.keterangan, item?.Keterangan, item?.status_keterangan, item?.catatan];
+    for (const description of descriptionCandidates) {
+        const match = String(description || '').match(/Ekspresi(?:\s*Wajah|\s*AI)?\s*[:=-]\s*([^|,;]+)/i);
+        if (match) {
+            const normalized = normalizePhotoExpressionLabel(match[1]);
+            if (normalized) return normalized;
+        }
+    }
     return 'Netral';
+}
+
+function getPhotoExpressionIcon(expression){
+    const icons = {
+        'Marah': '😠', 'Cemberut': '🙁', 'Sedih': '☹️', 'Gembira': '😄',
+        'Senyum': '🙂', 'Mulut Terbuka': '😮', 'Netral': '😐', 'Setengah Sedih': '😕'
+    };
+    return icons[normalizePhotoExpressionLabel(expression) || expression] || '😐';
 }
 
 function getExpressionIcon(expression){
     const value = String(expression || '').toLowerCase();
-    if (value.includes('sedih')) return '☹️';
-    if (value.includes('gembira')) return '😄';
-    if (value.includes('tersenyum')) return '🙂';
-    if (value.includes('mulut terbuka')) return '😮';
-    if (value.includes('netral')) return '😐';
-    return '👤';
+    if (value.includes('tidak rapi')) return '🔴';
+    if (value.includes('cukup rapi')) return '🟡';
+    if (value.includes('rapi')) return '🟢';
+    return '✨';
 }
 
 function getExpressionMeta(expression){
@@ -4319,6 +4565,7 @@ function loadPresensiHariIni(){
                 ? "bg-emerald-50 text-emerald-700 border-emerald-100"
                 : "bg-blue-50 text-blue-700 border-blue-100";
             const expression = getAttendanceExpression(p);
+            const photoExpression = getAttendancePhotoExpression(p);
 
             return `
             <div class="bg-white border border-slate-200 rounded-xl p-3 flex gap-3 shadow-sm min-w-0">
@@ -4356,12 +4603,16 @@ function loadPresensiHariIni(){
                         📏 Jarak: ${p.jarak || "-"}
                     </div>
 
-                    <div class="mt-2 flex items-center gap-2 rounded-xl bg-violet-50 border border-violet-100 p-2">
-                        <div class="shrink-0">
-                            ${getExpressionImageMarkup(expression, 'sm', false)}
+                    <div class="mt-2 grid grid-cols-1 gap-1.5">
+                        <div class="flex items-center gap-2 rounded-xl bg-violet-50 border border-violet-100 p-2">
+                            <div class="min-w-0 text-violet-700 font-semibold break-words leading-tight">
+                                ${getExpressionIcon(expression)} Kerapian AI: ${escapeHtml(expression)}
+                            </div>
                         </div>
-                        <div class="min-w-0 text-violet-700 font-semibold break-words leading-tight">
-                            ${getExpressionIcon(expression)} Ekspresi: ${escapeHtml(expression)}
+                        <div class="flex items-center gap-2 rounded-xl bg-sky-50 border border-sky-100 p-2">
+                            <div class="min-w-0 text-sky-700 font-semibold break-words leading-tight">
+                                ${getPhotoExpressionIcon(photoExpression)} Ekspresi: ${escapeHtml(photoExpression)}
+                            </div>
                         </div>
                     </div>
                 </div>
