@@ -10,6 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700&family=Plus+Jakarta+Sans:wght=400;600;700;800&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet Map (khusus peta posisi perangkat di Menu Admin) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <!-- PDF Export: jsPDF + AutoTable -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -55,6 +58,16 @@
         }
         .face-active {
             animation: pulse-border 2s infinite ease-in-out;
+        }
+        #admin-device-map {
+            min-height: 430px;
+            height: 54vh;
+            max-height: 620px;
+            width: 100%;
+            background: #e2e8f0;
+        }
+        .leaflet-container {
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
         }
     </style>
 </head>
@@ -224,7 +237,7 @@
                     <i class="fa-solid fa-file-invoice"></i> Riwayat & Rekap
                 </button>
                 <button onclick="switchTab('admin-menu')" id="btn-tab-admin-menu" class="tab-btn hidden px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 text-slate-600 hover:text-slate-900">
-                    <i class="fa-solid fa-chart-column"></i> Rekap Kehadiran Admin
+                    <i class="fa-solid fa-user-shield"></i> Menu Admin
                 </button>
                 <button onclick="switchTab('ganti-password')" id="btn-tab-ganti-password" class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 text-slate-600 hover:text-slate-900">
     				<i class="fa-solid fa-key"></i> Ganti Password
@@ -788,13 +801,62 @@
                 <div class="flex items-center gap-2 text-purple-100 text-xs font-bold uppercase tracking-wider mb-2">
                     <i class="fa-solid fa-shield-halved"></i> Menu Administrator
                 </div>
-                <h2 class="text-2xl font-extrabold">Rekap Kehadiran Guru</h2>
-                <p class="text-sm text-white/80 mt-1">Rekap mingguan, bulanan, atau rentang tanggal tertentu. Hasil dapat diunduh sebagai PDF dan dicetak.</p>
+                <h2 class="text-2xl font-extrabold">Menu Administrator</h2>
+                <p class="text-sm text-white/80 mt-1">Pantau posisi terakhir perangkat Bapak/Ibu, rekap kehadiran, dan status operasional presensi dari satu halaman Admin.</p>
             </div>
             <div class="bg-white/10 border border-white/20 rounded-xl px-4 py-3 min-w-[220px]">
                 <div class="text-[10px] uppercase tracking-wider font-bold text-white/70">Periode Aktif</div>
                 <div id="admin-report-period-label" class="text-sm font-bold mt-1">Belum dipilih</div>
             </div>
+        </div>
+    </div>
+
+    <!-- ADMIN ONLY: POSISI TERAKHIR PERANGKAT GURU -->
+    <div id="admin-device-location-panel" class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="p-5 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="flex items-start gap-3">
+                <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-map-location-dot text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">Posisi Perangkat Bapak/Ibu</h3>
+                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">Menampilkan posisi terakhir HP pengguna yang sudah login, memberi izin GPS, dan aplikasinya masih terbuka. Lokasi tidak berjalan diam-diam setelah aplikasi ditutup.</p>
+                </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <span id="admin-device-last-refresh" class="text-[10px] font-bold text-slate-500 bg-slate-100 px-3 py-2 rounded-xl">Belum diperbarui</span>
+                <button type="button" onclick="loadAdminDeviceLocations(true)" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-2 transition-all">
+                    <i class="fa-solid fa-rotate"></i> Refresh Posisi
+                </button>
+            </div>
+        </div>
+
+        <div class="p-4 grid grid-cols-2 lg:grid-cols-4 gap-3 bg-slate-50/70 border-b border-slate-100">
+            <div class="bg-white rounded-xl border border-slate-100 p-4"><div class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Terdeteksi</div><div id="admin-device-stat-total" class="text-2xl font-extrabold text-slate-900 mt-1">0</div></div>
+            <div class="bg-white rounded-xl border border-slate-100 p-4"><div class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Aktif ≤ 2 Menit</div><div id="admin-device-stat-active" class="text-2xl font-extrabold text-emerald-600 mt-1">0</div></div>
+            <div class="bg-white rounded-xl border border-slate-100 p-4"><div class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Terakhir ≤ 15 Menit</div><div id="admin-device-stat-recent" class="text-2xl font-extrabold text-amber-600 mt-1">0</div></div>
+            <div class="bg-white rounded-xl border border-slate-100 p-4"><div class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Lebih Lama</div><div id="admin-device-stat-stale" class="text-2xl font-extrabold text-slate-500 mt-1">0</div></div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,0.7fr)]">
+            <div class="relative border-b xl:border-b-0 xl:border-r border-slate-100">
+                <div id="admin-device-map"></div>
+                <div id="admin-device-map-empty" class="hidden absolute inset-0 bg-slate-50/95 flex items-center justify-center p-8 text-center z-[400]">
+                    <div><i class="fa-solid fa-location-dot text-3xl text-slate-300 mb-3"></i><p class="text-sm font-bold text-slate-600">Belum ada posisi perangkat</p><p class="text-xs text-slate-400 mt-1">Posisi muncul setelah pengguna login dan memberi izin lokasi.</p></div>
+                </div>
+            </div>
+            <div class="p-4">
+                <div class="flex items-center justify-between gap-2 mb-3">
+                    <div><h4 class="text-sm font-extrabold text-slate-900">Daftar Posisi Terakhir</h4><p class="text-[10px] text-slate-500 mt-0.5">Klik pengguna untuk memusatkan peta.</p></div>
+                    <span id="admin-device-list-count" class="text-[10px] font-bold bg-blue-50 text-blue-700 px-2.5 py-1.5 rounded-full">0 HP</span>
+                </div>
+                <div id="admin-device-location-list" class="space-y-2 max-h-[500px] overflow-y-auto pr-1">
+                    <div class="py-10 text-center text-xs text-slate-400">Klik Refresh Posisi untuk memuat data.</div>
+                </div>
+            </div>
+        </div>
+        <div class="px-5 py-4 bg-blue-50/70 border-t border-blue-100 text-[11px] leading-relaxed text-blue-800">
+            <i class="fa-solid fa-circle-info mr-1"></i> Status <b>Aktif</b> berarti GPS terakhir diterima maksimal 2 menit lalu. Browser HP dapat menghentikan pembaruan saat tab ditutup, perangkat terkunci lama, mode hemat baterai aktif, atau izin lokasi dicabut.
         </div>
     </div>
 
@@ -1014,7 +1076,7 @@
         //  SAKLAR DEPLOYMENT & KONFIGURASI UTAMA
         // ==========================================
         const IS_PREVIEW = false; 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycby3gm9vQ_46lyGQCC4KCieOO6LowVmmAWRNsi7_836zB2ri_6Rco8v4IpsN4mzYQzg4zg/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxXs4Urz6rdQlZHQzmbm6VKVhixsC4VLjss_sWrVgaZn86MtEU6W5rHMgrFXhvM5GtoSg/exec";
         const ATTENDANCE_RADIUS_METERS = 200;
 
         // State Global Aplikasi
@@ -1045,6 +1107,16 @@
         let adminReportSummaryRows = [];
         let adminReportDetailRows = [];
         let adminReportPeriodLabel = "";
+
+        // Pelacakan posisi perangkat: hanya selama pengguna login & aplikasi terbuka.
+        let deviceLocationWatchId = null;
+        let deviceLocationLastSentAt = 0;
+        let deviceLocationLastCoords = null;
+        let deviceLocationSaveBusy = false;
+        let adminDeviceLocations = [];
+        let adminDeviceMap = null;
+        let adminDeviceMarkers = [];
+        let adminDeviceRefreshTimer = null;
 
         // Titik kampus hasil deteksi GPS otomatis
         let selectedSchoolLat = null;
@@ -1452,12 +1524,18 @@
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-workspace').classList.remove('hidden');
 
+            // Posisi perangkat guru diperbarui hanya saat login, aplikasi terbuka, dan izin GPS diberikan.
+            if (currentSession.role !== "Admin") startDeviceLocationTracking();
+            else stopDeviceLocationTracking();
+
             loadDatabaseData();
             switchTab('dashboard');
         }
 
         function handleLogout() {
             stopCameraSystem();
+            stopDeviceLocationTracking();
+            stopAdminDeviceMapMonitoring();
             currentSession = null;
             document.getElementById('login-screen').classList.remove('hidden');
             document.getElementById('main-workspace').classList.add('hidden');
@@ -1613,6 +1691,9 @@
             if (tabId === 'admin-menu') {
                 initializeAdminAttendanceReport();
                 refreshAdminWaStatus(false);
+                startAdminDeviceMapMonitoring();
+            } else {
+                stopAdminDeviceMapMonitoring();
             }
             if (tabId === 'dashboard' && currentSession && currentSession.role === 'Admin') {
                 renderAdminTeacherAttendancePanel(false);
@@ -1658,6 +1739,268 @@ function renderJurnalRekap(){
 function formatTanggalRekap(value){
     if(!value) return "-";
     return normalizeDateToDDMMYYYY(value) || "-";
+}
+
+// ==========================================================
+// POSISI PERANGKAT BAPAK/IBU - KHUSUS TAMPILAN ADMIN
+// Catatan: update GPS hanya saat user login + aplikasi terbuka + izin lokasi aktif.
+// ==========================================================
+function startDeviceLocationTracking() {
+    if (!currentSession || currentSession.role === 'Admin' || !navigator.geolocation) return;
+    stopDeviceLocationTracking();
+
+    // Beritahu pengguna secara transparan bahwa lokasi aktif selama aplikasi terbuka.
+    showToast('GPS perangkat aktif selama aplikasi terbuka untuk pembaruan posisi terakhir.', 'info');
+
+    deviceLocationWatchId = navigator.geolocation.watchPosition(
+        (position) => {
+            const now = Date.now();
+            const lat = Number(position.coords.latitude);
+            const lng = Number(position.coords.longitude);
+            if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+            let movedMeters = Infinity;
+            if (deviceLocationLastCoords) {
+                movedMeters = calculateDistance(
+                    deviceLocationLastCoords.lat,
+                    deviceLocationLastCoords.lng,
+                    lat,
+                    lng
+                );
+            }
+
+            // Hemat baterai & request: kirim maksimal sekitar 45 detik,
+            // kecuali perangkat berpindah >= 25 meter.
+            const enoughTime = (now - deviceLocationLastSentAt) >= 45000;
+            const enoughMovement = movedMeters >= 25;
+            if (!enoughTime && !enoughMovement) return;
+
+            deviceLocationLastCoords = { lat, lng };
+            deviceLocationLastSentAt = now;
+            saveDeviceLocationToServer(position);
+        },
+        (err) => {
+            console.warn('Device location tracker:', err);
+        },
+        { enableHighAccuracy: true, maximumAge: 15000, timeout: 15000 }
+    );
+}
+
+function stopDeviceLocationTracking() {
+    if (deviceLocationWatchId !== null && navigator.geolocation) {
+        try { navigator.geolocation.clearWatch(deviceLocationWatchId); } catch (e) {}
+    }
+    deviceLocationWatchId = null;
+    deviceLocationLastSentAt = 0;
+    deviceLocationLastCoords = null;
+    deviceLocationSaveBusy = false;
+}
+
+function saveDeviceLocationToServer(position) {
+    if (!currentSession || currentSession.role === 'Admin' || deviceLocationSaveBusy) return;
+    const lat = Number(position.coords.latitude);
+    const lng = Number(position.coords.longitude);
+    const payload = {
+        nip: String(currentSession.nip || ''),
+        nama: String(currentSession.nama || ''),
+        username: String(currentSession.username || ''),
+        latitude: lat,
+        longitude: lng,
+        accuracy: Number(position.coords.accuracy || 0),
+        maps_link: `https://www.google.com/maps?q=${lat},${lng}`,
+        source: 'browser_geolocation_open_app'
+    };
+
+    if (IS_PREVIEW) {
+        const rows = JSON.parse(localStorage.getItem('mock_device_locations') || '[]');
+        const filtered = rows.filter(x => String(x.nip) !== payload.nip);
+        filtered.unshift({ ...payload, updated_at_iso: new Date().toISOString(), updated_at: new Date().toLocaleString('id-ID') });
+        localStorage.setItem('mock_device_locations', JSON.stringify(filtered));
+        return;
+    }
+
+    deviceLocationSaveBusy = true;
+    fetch(GAS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            action: 'saveDeviceLocation',
+            data: JSON.stringify(payload)
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (!data || data.success === false) console.warn('saveDeviceLocation:', data && data.message ? data.message : 'Endpoint belum aktif.');
+    })
+    .catch(err => console.warn('saveDeviceLocation network:', err))
+    .finally(() => { deviceLocationSaveBusy = false; });
+}
+
+function startAdminDeviceMapMonitoring() {
+    if (!currentSession || currentSession.role !== 'Admin') return;
+    loadAdminDeviceLocations(false);
+    stopAdminDeviceMapMonitoring();
+    adminDeviceRefreshTimer = setInterval(() => {
+        if (currentSession && currentSession.role === 'Admin') loadAdminDeviceLocations(false);
+    }, 30000);
+}
+
+function stopAdminDeviceMapMonitoring() {
+    if (adminDeviceRefreshTimer) clearInterval(adminDeviceRefreshTimer);
+    adminDeviceRefreshTimer = null;
+}
+
+async function loadAdminDeviceLocations(showFeedback = false) {
+    if (!currentSession || currentSession.role !== 'Admin') return;
+    const list = document.getElementById('admin-device-location-list');
+    if (showFeedback && list) list.innerHTML = '<div class="py-8 text-center text-xs text-slate-400"><i class="fa-solid fa-spinner animate-spin text-blue-600 mr-1"></i> Memuat posisi perangkat...</div>';
+
+    try {
+        let rows = [];
+        if (IS_PREVIEW) {
+            rows = JSON.parse(localStorage.getItem('mock_device_locations') || '[]');
+        } else {
+            const res = await fetch(`${GAS_URL}?action=getDeviceLocations&_=${Date.now()}`, { cache: 'no-store' });
+            const data = await res.json();
+            if (!data || data.success === false) throw new Error((data && data.message) || 'Endpoint posisi perangkat belum aktif.');
+            rows = Array.isArray(data.locations) ? data.locations : [];
+        }
+        adminDeviceLocations = rows
+            .filter(x => Number.isFinite(Number(x.latitude)) && Number.isFinite(Number(x.longitude)))
+            .sort((a,b) => String(b.updated_at_iso || b.updated_at || '').localeCompare(String(a.updated_at_iso || a.updated_at || '')));
+        renderAdminDeviceLocations();
+        const last = document.getElementById('admin-device-last-refresh');
+        if (last) last.textContent = 'Refresh ' + new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+        if (showFeedback) showToast(`Posisi ${adminDeviceLocations.length} perangkat berhasil dimuat.`, 'success');
+    } catch (err) {
+        console.error('loadAdminDeviceLocations:', err);
+        if (list) list.innerHTML = `<div class="p-4 rounded-xl bg-rose-50 text-rose-700 text-xs border border-rose-100"><b>Data posisi belum tersedia.</b><br>${escapeHtml(String(err.message || err))}<br><span class="text-[10px]">Pasang DEVICE_LOCATION_PATCH.gs pada backend Apps Script lalu deploy ulang.</span></div>`;
+        if (showFeedback) showToast('Gagal memuat posisi perangkat. Periksa patch backend.', 'error');
+    }
+}
+
+function deviceLocationAgeMinutes(row) {
+    const raw = row.updated_at_iso || row.updated_at || row.timestamp || '';
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return Infinity;
+    return Math.max(0, (Date.now() - d.getTime()) / 60000);
+}
+
+function formatDeviceLocationAge(row) {
+    const min = deviceLocationAgeMinutes(row);
+    if (!Number.isFinite(min)) return 'waktu tidak diketahui';
+    if (min < 1) return 'baru saja';
+    if (min < 60) return `${Math.floor(min)} menit lalu`;
+    if (min < 1440) return `${Math.floor(min / 60)} jam lalu`;
+    return `${Math.floor(min / 1440)} hari lalu`;
+}
+
+function deviceLocationStatusMeta(row) {
+    const min = deviceLocationAgeMinutes(row);
+    if (min <= 2) return { label:'Aktif', cls:'bg-emerald-100 text-emerald-700 border-emerald-200', dot:'bg-emerald-500' };
+    if (min <= 15) return { label:'Terakhir baru', cls:'bg-amber-100 text-amber-700 border-amber-200', dot:'bg-amber-500' };
+    return { label:'Posisi lama', cls:'bg-slate-100 text-slate-600 border-slate-200', dot:'bg-slate-400' };
+}
+
+function renderAdminDeviceLocations() {
+    const rows = adminDeviceLocations || [];
+    const active = rows.filter(x => deviceLocationAgeMinutes(x) <= 2).length;
+    const recent = rows.filter(x => { const m = deviceLocationAgeMinutes(x); return m > 2 && m <= 15; }).length;
+    const stale = rows.filter(x => deviceLocationAgeMinutes(x) > 15).length;
+
+    const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    setText('admin-device-stat-total', rows.length);
+    setText('admin-device-stat-active', active);
+    setText('admin-device-stat-recent', recent);
+    setText('admin-device-stat-stale', stale);
+    setText('admin-device-list-count', `${rows.length} HP`);
+
+    renderAdminDeviceList(rows);
+    renderAdminDeviceMap(rows);
+}
+
+function renderAdminDeviceList(rows) {
+    const list = document.getElementById('admin-device-location-list');
+    if (!list) return;
+    if (!rows.length) {
+        list.innerHTML = '<div class="py-10 text-center text-xs text-slate-400">Belum ada HP yang mengirim posisi.</div>';
+        return;
+    }
+    list.innerHTML = rows.map((row, idx) => {
+        const status = deviceLocationStatusMeta(row);
+        const lat = Number(row.latitude), lng = Number(row.longitude);
+        const accuracy = Number(row.accuracy || 0);
+        return `<button type="button" onclick="focusAdminDeviceMarker(${idx})" class="w-full text-left p-3 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/40 transition-all">
+            <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full ${status.dot}"></span><p class="text-xs font-extrabold text-slate-900 truncate">${escapeHtml(row.nama || 'Tanpa Nama')}</p></div>
+                    <p class="text-[10px] text-slate-500 mt-1">NIP: ${escapeHtml(row.nip || '-')}</p>
+                </div>
+                <span class="shrink-0 px-2 py-1 rounded-full border text-[9px] font-bold ${status.cls}">${status.label}</span>
+            </div>
+            <div class="mt-2 text-[10px] text-slate-500 space-y-0.5">
+                <p><i class="fa-regular fa-clock w-4"></i>${formatDeviceLocationAge(row)}</p>
+                <p><i class="fa-solid fa-location-crosshairs w-4"></i>${lat.toFixed(6)}, ${lng.toFixed(6)}</p>
+                <p><i class="fa-solid fa-bullseye w-4"></i>Akurasi ±${accuracy ? accuracy.toFixed(0) : '-'} m</p>
+            </div>
+        </button>`;
+    }).join('');
+}
+
+function renderAdminDeviceMap(rows) {
+    const mapEl = document.getElementById('admin-device-map');
+    const emptyEl = document.getElementById('admin-device-map-empty');
+    if (!mapEl) return;
+    if (typeof L === 'undefined') {
+        if (emptyEl) {
+            emptyEl.classList.remove('hidden');
+            emptyEl.innerHTML = '<div><p class="text-sm font-bold text-rose-600">Library peta gagal dimuat.</p><p class="text-xs text-slate-500 mt-1">Periksa koneksi internet/CDN Leaflet.</p></div>';
+        }
+        return;
+    }
+
+    if (!adminDeviceMap) {
+        adminDeviceMap = L.map('admin-device-map', { zoomControl: true }).setView([-7.812324, 112.012543], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(adminDeviceMap);
+    }
+
+    adminDeviceMarkers.forEach(m => { try { adminDeviceMap.removeLayer(m); } catch (e) {} });
+    adminDeviceMarkers = [];
+
+    if (!rows.length) {
+        if (emptyEl) emptyEl.classList.remove('hidden');
+        setTimeout(() => adminDeviceMap.invalidateSize(), 100);
+        return;
+    }
+    if (emptyEl) emptyEl.classList.add('hidden');
+
+    const bounds = [];
+    rows.forEach((row, idx) => {
+        const lat = Number(row.latitude), lng = Number(row.longitude);
+        const status = deviceLocationStatusMeta(row);
+        const marker = L.marker([lat, lng]).addTo(adminDeviceMap);
+        marker.bindPopup(`<div style="min-width:190px"><b>${escapeHtml(row.nama || 'Tanpa Nama')}</b><br><span style="font-size:11px">NIP: ${escapeHtml(row.nip || '-')}</span><br><span style="font-size:11px">Status: ${status.label} • ${formatDeviceLocationAge(row)}</span><br><span style="font-size:11px">GPS: ${lat.toFixed(6)}, ${lng.toFixed(6)}</span><br><a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" rel="noopener" style="font-size:11px;color:#2563eb;font-weight:700">Buka di Google Maps ↗</a></div>`);
+        marker.__deviceIndex = idx;
+        adminDeviceMarkers.push(marker);
+        bounds.push([lat,lng]);
+    });
+
+    setTimeout(() => {
+        adminDeviceMap.invalidateSize();
+        if (bounds.length === 1) adminDeviceMap.setView(bounds[0], 17);
+        else adminDeviceMap.fitBounds(bounds, { padding:[30,30], maxZoom:17 });
+    }, 120);
+}
+
+function focusAdminDeviceMarker(index) {
+    const row = adminDeviceLocations[index];
+    const marker = adminDeviceMarkers[index];
+    if (!row || !marker || !adminDeviceMap) return;
+    adminDeviceMap.setView([Number(row.latitude), Number(row.longitude)], 18);
+    marker.openPopup();
 }
 
 // Geolocation GPS tracker with Geofencing Verification (Mendeteksi Koordinat Asli Perangkat)
