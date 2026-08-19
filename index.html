@@ -16,6 +16,8 @@
     <!-- PDF Export: jsPDF + AutoTable -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <!-- Excel Export: SheetJS -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     
     <!-- MediaPipe Face Mesh & Camera Utilities -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
@@ -894,6 +896,12 @@
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
                     <input type="search" id="admin-report-search" oninput="applyAdminAttendanceReport(false)" placeholder="Cari nama atau NIP guru..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:border-purple-500">
                 </div>
+                <button type="button" onclick="exportAdminAttendanceCSV()" class="px-4 py-2.5 rounded-xl bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 text-xs font-bold flex items-center justify-center gap-2 transition-all">
+                    <i class="fa-solid fa-file-csv"></i> CSV
+                </button>
+                <button type="button" onclick="exportAdminAttendanceExcel()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all">
+                    <i class="fa-solid fa-file-excel"></i> Excel
+                </button>
                 <button type="button" onclick="generateAdminAttendancePDF()" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all">
                     <i class="fa-solid fa-file-pdf"></i> Unduh PDF
                 </button>
@@ -903,6 +911,34 @@
             </div>
         </div>
         <p class="text-[11px] text-slate-500"><i class="fa-solid fa-circle-info text-indigo-500 mr-1"></i> Rekap “lengkap” berarti guru memiliki pasangan absen Masuk dan Pulang pada tanggal yang sama.</p>
+    </div>
+
+    <!-- LAPORAN ABSENSI MODEL KALENDER: MINGGUAN / BULANAN / RENTANG TANGGAL -->
+    <div id="admin-calendar-report" class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="p-5 border-b border-slate-100 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+            <div>
+                <h3 id="admin-calendar-title" class="text-base font-extrabold text-slate-900">Rekap Bulanan Kehadiran Guru</h3>
+                <p id="admin-calendar-period" class="text-xs text-slate-500 mt-1">Pilih periode untuk menampilkan laporan.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 text-[10px] font-bold">
+                <span class="px-2.5 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">H = Hadir</span>
+                <span class="px-2.5 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-100">I = Izin</span>
+                <span class="px-2.5 py-1.5 rounded-full bg-rose-50 text-rose-700 border border-rose-100">S = Sakit</span>
+                <span class="px-2.5 py-1.5 rounded-full bg-sky-50 text-sky-700 border border-sky-100">T = Tugas</span>
+                <span class="px-2.5 py-1.5 rounded-full bg-red-50 text-red-700 border border-red-100">A = Alpha</span>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table id="admin-calendar-table" class="w-full text-left border-collapse whitespace-nowrap">
+                <thead id="admin-calendar-head"></thead>
+                <tbody id="admin-calendar-body" class="text-xs divide-y divide-slate-100">
+                    <tr><td class="py-10 px-5 text-center text-slate-400">Belum ada laporan yang ditampilkan.</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 text-[10px] text-slate-500 leading-relaxed">
+            <i class="fa-solid fa-circle-info text-indigo-500 mr-1"></i> Alpha dihitung otomatis untuk hari kerja Senin–Jumat yang sudah lewat jika tidak ada presensi maupun keterangan resmi. Hari ini, tanggal mendatang, Sabtu, dan Minggu ditampilkan “-” bila belum ada data.
+        </div>
     </div>
 
     <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
@@ -984,6 +1020,9 @@
                         <th class="py-4 px-5">No.</th>
                         <th class="py-4 px-5">Guru / NIP</th>
                         <th class="py-4 px-5 text-center">Hari Hadir</th>
+                        <th class="py-4 px-5 text-center text-amber-700">Izin</th>
+                        <th class="py-4 px-5 text-center text-rose-700">Sakit</th>
+                        <th class="py-4 px-5 text-center text-sky-700">Tugas</th>
                         <th class="py-4 px-5 text-center">Masuk</th>
                         <th class="py-4 px-5 text-center">Pulang</th>
                         <th class="py-4 px-5 text-center">Hari Lengkap</th>
@@ -1076,7 +1115,7 @@
         //  SAKLAR DEPLOYMENT & KONFIGURASI UTAMA
         // ==========================================
         const IS_PREVIEW = false; 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyZaWE31l0MPKEC1cNj-gjuY1hdDD51CapQryltDTi4tJ0yx32uabJcXGvzTphtarHjoA/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbz92e_BF8fOmbuAzfnZugWOhyzKr7X7_nEsJml5CLNxdhCjV9ifXWCD-BeQX68tR_Odaw/exec";
         const ATTENDANCE_RADIUS_METERS = 200;
 
         // State Global Aplikasi
@@ -1107,6 +1146,9 @@
         let adminReportSummaryRows = [];
         let adminReportDetailRows = [];
         let adminReportPeriodLabel = "";
+        let adminReportPeriodType = "month";
+        let adminCalendarReportRows = [];
+        let adminCalendarReportDates = [];
 
         // Pelacakan posisi perangkat: hanya selama pengguna login & aplikasi terbuka.
         let deviceLocationWatchId = null;
@@ -3407,6 +3449,7 @@ function applyDateFilters() {
 
         function setAdminReportPeriod(periodType, notify = true) {
             if (!currentSession || currentSession.role !== 'Admin') return;
+            adminReportPeriodType = periodType;
             const startInput = document.getElementById('admin-report-start');
             const endInput = document.getElementById('admin-report-end');
             const today = new Date();
@@ -3449,6 +3492,7 @@ function applyDateFilters() {
         }
 
         function markAdminReportCustom() {
+            adminReportPeriodType = 'custom';
             document.querySelectorAll('.admin-period-btn').forEach(btn => {
                 btn.className = 'admin-period-btn px-4 py-2.5 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold hover:bg-slate-200 transition-all';
             });
@@ -3537,6 +3581,24 @@ function applyDateFilters() {
             }).sort((a, b) => a.nama.localeCompare(b.nama, 'id'));
 
             adminReportSummaryRows = summaryRows;
+            // Tambahkan total Izin, Sakit, dan Tugas per guru berdasarkan keterangan resmi
+            // pada periode yang sama. Kehadiran (H) tetap diprioritaskan jika pada hari yang sama
+            // guru memiliki rekaman presensi dan keterangan resmi.
+            const calendarStatusRows = buildAdminCalendarReportData();
+            const calendarStatusMap = new Map(calendarStatusRows.map(item => [
+                `${String(item.nip || '').trim()}|${String(item.nama || '').trim().toLowerCase()}`,
+                item.totals || {}
+            ]));
+            adminReportSummaryRows = summaryRows.map(item => {
+                const key = `${String(item.nip || '').trim()}|${String(item.nama || '').trim().toLowerCase()}`;
+                const totals = calendarStatusMap.get(key) || {};
+                return {
+                    ...item,
+                    izin: Number(totals.I || 0),
+                    sakit: Number(totals.S || 0),
+                    tugas: Number(totals.T || 0)
+                };
+            });
             adminReportDetailRows = detailRows;
             adminReportPeriodLabel = `${formatDateLongIndonesia(startDate)} s.d. ${formatDateLongIndonesia(endDate)}`;
             renderAdminAttendanceReport();
@@ -3562,7 +3624,7 @@ function applyDateFilters() {
 
             const body = document.getElementById('admin-report-table-body');
             if (!summaryRows.length) {
-                body.innerHTML = '<tr><td colspan="9" class="py-10 text-center text-slate-400"><i class="fa-solid fa-folder-open text-2xl block mb-2"></i>Tidak ada guru atau data presensi pada periode ini.</td></tr>';
+                body.innerHTML = '<tr><td colspan="12" class="py-10 text-center text-slate-400"><i class="fa-solid fa-folder-open text-2xl block mb-2"></i>Tidak ada guru atau data presensi pada periode ini.</td></tr>';
             } else {
                 body.innerHTML = summaryRows.map((row, index) => {
                     const statusClass = row.status === 'Lengkap'
@@ -3574,6 +3636,9 @@ function applyDateFilters() {
                         <td class="py-4 px-5 text-slate-500 font-semibold">${index + 1}</td>
                         <td class="py-4 px-5"><div class="font-bold text-slate-900">${escapeHtml(row.nama)}</div><div class="text-[10px] text-slate-500 font-mono mt-0.5">NIP: ${escapeHtml(row.nip)}</div></td>
                         <td class="py-4 px-5 text-center font-bold">${row.hariHadir}</td>
+                        <td class="py-4 px-5 text-center text-amber-700 font-bold">${row.izin || 0}</td>
+                        <td class="py-4 px-5 text-center text-rose-700 font-bold">${row.sakit || 0}</td>
+                        <td class="py-4 px-5 text-center text-sky-700 font-bold">${row.tugas || 0}</td>
                         <td class="py-4 px-5 text-center text-indigo-700 font-bold">${row.masuk}</td>
                         <td class="py-4 px-5 text-center text-rose-700 font-bold">${row.pulang}</td>
                         <td class="py-4 px-5 text-center text-emerald-700 font-bold">${row.lengkap}</td>
@@ -3598,10 +3663,326 @@ function applyDateFilters() {
                         <td class="py-3 px-5 whitespace-nowrap">${escapeHtml(formatJamIndonesia(row.jam || '-'))}</td>
                         <td class="py-3 px-5">${escapeHtml(row.nama_lokasi || row.lokasi || '-')}</td>
                         <td class="py-3 px-5 whitespace-nowrap font-semibold">${escapeHtml(row.jarak || '-')}</td>
-                        <td class="py-3 px-5">${escapeHtml(row.keterangan || '-')}</td>
+                        <td class="py-3 px-5">${escapeHtml(statusDescription(row) || '-')}</td>
                     </tr>`;
                 }).join('');
             }
+
+            renderAdminCalendarReport();
+        }
+
+        function getAdminCalendarPeriodTitle() {
+            if (adminReportPeriodType === 'week') return 'Rekap Mingguan Kehadiran Guru';
+            if (adminReportPeriodType === 'month') return 'Rekap Bulanan Kehadiran Guru';
+            return 'Rekap Kehadiran Guru - Rentang Tanggal';
+        }
+
+        function formatCompactDate(date) {
+            if (!(date instanceof Date) || Number.isNaN(date.getTime())) return '-';
+            const dd = String(date.getDate()).padStart(2, '0');
+            const mm = String(date.getMonth() + 1).padStart(2, '0');
+            const yy = date.getFullYear();
+            return `${dd}-${mm}-${yy}`;
+        }
+
+        function getIndonesianDayShort(date) {
+            return ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'][date.getDay()];
+        }
+
+        function getAdminCalendarDateRange() {
+            const startInput = document.getElementById('admin-report-start');
+            const endInput = document.getElementById('admin-report-end');
+            const start = parseHTMLDate(startInput?.value || '');
+            const end = parseHTMLDate(endInput?.value || '');
+            if (!start || !end || start > end) return [];
+            start.setHours(0, 0, 0, 0);
+            end.setHours(0, 0, 0, 0);
+            const dates = [];
+            const cursor = new Date(start);
+            let safety = 0;
+            while (cursor <= end && safety < 370) {
+                dates.push(new Date(cursor));
+                cursor.setDate(cursor.getDate() + 1);
+                safety += 1;
+            }
+            return dates;
+        }
+
+        function getTeacherDateKey(nip, nama, dateDdMmYyyy) {
+            const safeNip = String(nip || '').trim();
+            const safeName = String(nama || '').trim().toLowerCase();
+            return `${safeNip}|${safeName}|${dateDdMmYyyy}`;
+        }
+
+        function buildAdminCalendarReportData() {
+            const dates = getAdminCalendarDateRange();
+            adminCalendarReportDates = dates;
+            const attendanceMap = new Map();
+            (mockAttendanceDb || []).forEach(row => {
+                const dateKey = normalizeDateToDDMMYYYY(row.tanggal);
+                if (!dateKey) return;
+                const nip = String(row.nip || '').trim();
+                const nama = String(row.nama || '').trim().toLowerCase();
+                if (nip) attendanceMap.set(`nip:${nip}|${dateKey}`, true);
+                if (nama) attendanceMap.set(`nama:${nama}|${dateKey}`, true);
+            });
+
+            const statusRows = Array.from(mockStatusKehadiranDb || []);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            adminCalendarReportRows = (adminReportSummaryRows || []).map(row => {
+                const nip = String(row.nip || '').trim();
+                const nama = String(row.nama || '').trim();
+                const namaKey = nama.toLowerCase();
+                const statuses = [];
+                const totals = { H: 0, I: 0, S: 0, T: 0, A: 0 };
+
+                dates.forEach(date => {
+                    const ddmmyyyy = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth()+1).padStart(2, '0')}/${date.getFullYear()}`;
+                    const hasAttendance = (nip && attendanceMap.has(`nip:${nip}|${ddmmyyyy}`)) || (namaKey && attendanceMap.has(`nama:${namaKey}|${ddmmyyyy}`));
+                    let code = '-';
+                    let label = 'Belum ada data';
+                    let note = '';
+                    let jenis = '';
+
+                    if (hasAttendance) {
+                        code = 'H';
+                        label = 'Hadir';
+                    } else {
+                        const official = statusRows.find(statusRow => {
+                            const statusNip = String(statusRow.nip || '').trim();
+                            const statusName = String(statusRow.nama || '').trim().toLowerCase();
+                            const userMatch = (nip && statusNip === nip) || (!nip && namaKey && statusName === namaKey) || (nip && namaKey && !statusNip && statusName === namaKey);
+                            return userMatch && statusIsActiveOnDate(statusRow, ddmmyyyy);
+                        });
+                        if (official) {
+                            const category = statusCategory(official.jenis);
+                            note = statusDescription(official);
+                            jenis = String(official.jenis || '').trim();
+                            if (category === 'sakit') { code = 'S'; jenis = jenis || 'Sakit'; }
+                            else if (category === 'dinas') { code = 'T'; jenis = jenis || 'Tugas Dinas Luar'; }
+                            else { code = 'I'; jenis = jenis || 'Izin'; }
+                            label = note ? `${jenis} • ${note}` : jenis;
+                        } else {
+                            const day = date.getDay();
+                            const isWeekday = day >= 1 && day <= 5;
+                            if (date < today && isWeekday) {
+                                code = 'A';
+                                label = 'Alpha / tidak ada presensi';
+                            } else if (day === 0 || day === 6) {
+                                label = 'Akhir pekan';
+                            } else if (date > today) {
+                                label = 'Tanggal mendatang';
+                            } else {
+                                label = 'Hari ini - belum ada data';
+                            }
+                        }
+                    }
+                    if (totals[code] !== undefined) totals[code] += 1;
+                    statuses.push({ code, label, date: ddmmyyyy, note, jenis });
+                });
+                return { nip, nama, statuses, totals };
+            });
+            return adminCalendarReportRows;
+        }
+
+        function adminCalendarBadge(code, label) {
+            const styles = {
+                H: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+                I: 'bg-amber-100 text-amber-700 border-amber-200',
+                S: 'bg-rose-100 text-rose-700 border-rose-200',
+                T: 'bg-sky-100 text-sky-700 border-sky-200',
+                A: 'bg-red-100 text-red-700 border-red-200',
+                '-': 'bg-slate-100 text-slate-500 border-slate-100'
+            };
+            return `<span title="${escapeHtml(label || '')}" class="inline-flex w-8 h-8 items-center justify-center rounded-full border text-[11px] font-extrabold ${styles[code] || styles['-']}">${escapeHtml(code)}</span>`;
+        }
+
+        function renderAdminCalendarReport() {
+            const head = document.getElementById('admin-calendar-head');
+            const body = document.getElementById('admin-calendar-body');
+            const title = document.getElementById('admin-calendar-title');
+            const period = document.getElementById('admin-calendar-period');
+            if (!head || !body) return;
+
+            const rows = buildAdminCalendarReportData();
+            const dates = adminCalendarReportDates || [];
+            if (title) title.textContent = getAdminCalendarPeriodTitle();
+            if (period) {
+                const start = dates[0], end = dates[dates.length - 1];
+                period.textContent = dates.length ? `${formatCompactDate(start)} s.d. ${formatCompactDate(end)} • ${rows.length} guru` : 'Pilih periode untuk menampilkan laporan.';
+            }
+
+            const dateHeaders = dates.map(date => `<th class="py-3 px-2 text-center min-w-[112px] border-l border-slate-100"><div class="text-[10px] font-extrabold text-slate-700 normal-case">${getIndonesianDayShort(date)}</div><div class="text-[9px] text-slate-500 mt-0.5">${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}</div></th>`).join('');
+            head.innerHTML = `<tr class="bg-slate-100 text-slate-600 text-[10px] font-bold uppercase border-b border-slate-200">
+                <th class="py-3 px-4 min-w-[145px] sticky left-0 z-20 bg-slate-100">NIP</th>
+                <th class="py-3 px-4 min-w-[230px] sticky z-20 bg-slate-100" style="left:145px">Nama</th>
+                ${dateHeaders}
+                <th class="py-3 px-3 text-center min-w-[48px] border-l border-slate-200 text-emerald-700">H</th>
+                <th class="py-3 px-3 text-center min-w-[48px] text-amber-700">I</th>
+                <th class="py-3 px-3 text-center min-w-[48px] text-rose-700">S</th>
+                <th class="py-3 px-3 text-center min-w-[48px] text-sky-700">T</th>
+                <th class="py-3 px-3 text-center min-w-[48px] text-red-700">A</th>
+            </tr>`;
+
+            if (!rows.length) {
+                body.innerHTML = `<tr><td colspan="${dates.length + 7}" class="py-10 px-5 text-center text-slate-400"><i class="fa-solid fa-folder-open text-2xl block mb-2"></i>Tidak ada data guru pada periode ini.</td></tr>`;
+                return;
+            }
+
+            body.innerHTML = rows.map(row => {
+                const statusCells = row.statuses.map(status => {
+                    const reason = ['I','S','T'].includes(status.code) && status.note
+                        ? `<div class="mt-1 text-[9px] leading-tight font-semibold text-slate-600 max-w-[105px] mx-auto line-clamp-3" title="${escapeHtml(status.note)}">${escapeHtml(status.note)}</div>`
+                        : '';
+                    return `<td class="py-2.5 px-2 text-center align-top border-l border-slate-50">${adminCalendarBadge(status.code, `${status.date} • ${status.label}`)}${reason}</td>`;
+                }).join('');
+                return `<tr class="hover:bg-slate-50/70">
+                    <td class="py-3 px-4 font-mono text-[10px] text-slate-600 sticky left-0 z-10 bg-white">${escapeHtml(row.nip || '-')}</td>
+                    <td class="py-3 px-4 font-extrabold text-slate-900 sticky z-10 bg-white" style="left:145px">${escapeHtml(row.nama || '-')}</td>
+                    ${statusCells}
+                    <td class="py-3 px-3 text-center font-extrabold text-emerald-700 border-l border-slate-200">${row.totals.H}</td>
+                    <td class="py-3 px-3 text-center font-extrabold text-amber-700">${row.totals.I}</td>
+                    <td class="py-3 px-3 text-center font-extrabold text-rose-700">${row.totals.S}</td>
+                    <td class="py-3 px-3 text-center font-extrabold text-sky-700">${row.totals.T}</td>
+                    <td class="py-3 px-3 text-center font-extrabold text-red-700">${row.totals.A}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function getAdminCalendarExportMatrix() {
+            buildAdminCalendarReportData();
+            const dates = adminCalendarReportDates || [];
+            const rows = adminCalendarReportRows || [];
+            const title = getAdminCalendarPeriodTitle();
+            const start = dates[0], end = dates[dates.length - 1];
+            const periodText = dates.length ? `${formatCompactDate(start)} s.d. ${formatCompactDate(end)}` : '-';
+            const headers = ['NIP', 'Nama', ...dates.map(d => `${getIndonesianDayShort(d)} ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`), 'H', 'I', 'S', 'T', 'A'];
+            const dailyCellText = status => {
+                if (['I','S','T'].includes(status.code) && status.note) return `${status.code} - ${status.note}`;
+                return status.code;
+            };
+            const dataRows = rows.map(row => [row.nip || '-', row.nama || '-', ...row.statuses.map(dailyCellText), row.totals.H, row.totals.I, row.totals.S, row.totals.T, row.totals.A]);
+            return { title, periodText, headers, dataRows, dates, rows };
+        }
+
+        function exportAdminAttendanceCSV() {
+            if (!currentSession || currentSession.role !== 'Admin') return;
+            const report = getAdminCalendarExportMatrix();
+            if (!report.rows.length || !report.dates.length) {
+                showToast('Tidak ada data laporan untuk diekspor.', 'error');
+                return;
+            }
+            const csvRows = [
+                [report.title],
+                [`Periode: ${report.periodText}`],
+                ['Keterangan: H=Hadir, I=Izin, S=Sakit, T=Tugas, A=Alpha'],
+                [],
+                report.headers,
+                ...report.dataRows
+            ];
+            const csv = '\uFEFF' + csvRows.map(row => row.map(value => `"${String(value ?? '').replaceAll('"', '""')}"`).join(';')).join('\r\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const safePeriod = report.periodText.replace(/[^0-9A-Za-z]+/g, '_').replace(/^_|_$/g, '');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Rekap_Absensi_${safePeriod}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+            showToast('CSV laporan absensi berhasil diunduh.', 'success');
+        }
+
+        function exportAdminAttendanceExcel() {
+            if (!currentSession || currentSession.role !== 'Admin') return;
+            const report = getAdminCalendarExportMatrix();
+            if (!report.rows.length || !report.dates.length) {
+                showToast('Tidak ada data laporan untuk diekspor.', 'error');
+                return;
+            }
+            if (!window.XLSX) {
+                showToast('Pustaka Excel belum termuat. Periksa koneksi internet lalu coba lagi.', 'error');
+                return;
+            }
+            const aoa = [
+                [report.title],
+                [`Periode: ${report.periodText}`],
+                ['Keterangan: H=Hadir, I=Izin, S=Sakit, T=Tugas, A=Alpha'],
+                [],
+                report.headers,
+                ...report.dataRows
+            ];
+            const ws = XLSX.utils.aoa_to_sheet(aoa);
+            const totalCols = report.headers.length;
+            ws['!merges'] = [
+                { s: { r: 0, c: 0 }, e: { r: 0, c: Math.max(0, totalCols - 1) } },
+                { s: { r: 1, c: 0 }, e: { r: 1, c: Math.max(0, totalCols - 1) } },
+                { s: { r: 2, c: 0 }, e: { r: 2, c: Math.max(0, totalCols - 1) } }
+            ];
+            ws['!cols'] = [
+                { wch: 20 }, { wch: 30 },
+                ...report.dates.map(() => ({ wch: 28 })),
+                { wch: 6 }, { wch: 6 }, { wch: 6 }, { wch: 6 }, { wch: 6 }
+            ];
+            ws['!freeze'] = { xSplit: 2, ySplit: 5 };
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Rekap Absensi');
+
+            const detailData = [['Tanggal', 'Guru', 'NIP', 'Tipe', 'Jam', 'Lokasi', 'Jarak', 'Keterangan']];
+            (adminReportDetailRows || []).forEach(row => detailData.push([
+                normalizeDateToDDMMYYYY(row.tanggal) || row.tanggal || '-', row.nama || '-', row.nip || '-', row.tipe || '-', formatJamIndonesia(row.jam || '-'), row.nama_lokasi || row.lokasi || '-', row.jarak || '-', row.keterangan || '-'
+            ]));
+            const wsDetail = XLSX.utils.aoa_to_sheet(detailData);
+            wsDetail['!cols'] = [{wch:14},{wch:30},{wch:20},{wch:10},{wch:14},{wch:30},{wch:12},{wch:40}];
+            XLSX.utils.book_append_sheet(wb, wsDetail, 'Detail Presensi');
+
+            const statusDetail = [['Tanggal Mulai', 'Tanggal Selesai', 'Guru', 'NIP', 'Jenis', 'Kode Rekap', 'Keterangan', 'Surat Pendukung']];
+            const statusSeen = new Set();
+            const reportTeacherNips = new Set(report.rows.map(item => String(item.nip || '').trim()).filter(Boolean));
+            const reportTeacherNames = new Set(report.rows.map(item => String(item.nama || '').trim().toLowerCase()).filter(Boolean));
+            (mockStatusKehadiranDb || []).forEach(row => {
+                const rowNip = String(row.nip || '').trim();
+                const rowName = String(row.nama || '').trim().toLowerCase();
+                if (!reportTeacherNips.has(rowNip) && !reportTeacherNames.has(rowName)) return;
+                const overlapsPeriod = report.dates.some(date => {
+                    const ddmmyyyy = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth()+1).padStart(2, '0')}/${date.getFullYear()}`;
+                    return statusIsActiveOnDate(row, ddmmyyyy);
+                });
+                if (!overlapsPeriod) return;
+                const key = String(row.id || `${row.nip}|${row.tanggal_mulai}|${row.jenis}|${row.keterangan}`);
+                if (statusSeen.has(key)) return;
+                statusSeen.add(key);
+                const category = statusCategory(row.jenis);
+                const code = category === 'sakit' ? 'S' : category === 'dinas' ? 'T' : 'I';
+                statusDetail.push([
+                    row.tanggal_mulai || row.tanggal || '-', row.tanggal_selesai || row.tanggal_mulai || row.tanggal || '-',
+                    row.nama || '-', row.nip || '-', row.jenis || '-', code, statusDescription(row) || '-', row.surat_link || row.surat_nama || '-'
+                ]);
+            });
+            const wsStatus = XLSX.utils.aoa_to_sheet(statusDetail);
+            wsStatus['!cols'] = [{wch:15},{wch:15},{wch:30},{wch:20},{wch:22},{wch:12},{wch:45},{wch:40}];
+            XLSX.utils.book_append_sheet(wb, wsStatus, 'Izin Sakit Tugas');
+
+            const dailyStatusData = [['Tanggal', 'Guru', 'NIP', 'Kode', 'Jenis', 'Keterangan']];
+            report.rows.forEach(teacher => {
+                teacher.statuses.forEach(status => {
+                    if (!['I','S','T'].includes(status.code)) return;
+                    dailyStatusData.push([
+                        status.date || '-', teacher.nama || '-', teacher.nip || '-',
+                        status.code, status.jenis || (status.code === 'I' ? 'Izin' : status.code === 'S' ? 'Sakit' : 'Tugas'),
+                        status.note || '-'
+                    ]);
+                });
+            });
+            const wsDailyStatus = XLSX.utils.aoa_to_sheet(dailyStatusData);
+            wsDailyStatus['!cols'] = [{wch:14},{wch:30},{wch:20},{wch:8},{wch:22},{wch:55}];
+            XLSX.utils.book_append_sheet(wb, wsDailyStatus, 'Keterangan Harian');
+
+            const safePeriod = report.periodText.replace(/[^0-9A-Za-z]+/g, '_').replace(/^_|_$/g, '');
+            XLSX.writeFile(wb, `Rekap_Absensi_${safePeriod}.xlsx`);
+            showToast('File Excel laporan absensi berhasil diunduh.', 'success');
         }
 
         function renderAdminTeacherAttendancePanel(notify = false) {
@@ -3810,16 +4191,16 @@ function applyDateFilters() {
             const totalBelum = summaryRows.reduce((sum, row) => sum + row.belumLengkap, 0);
             const summaryHTML = summaryRows.map((row, index) => `<tr>
                 <td>${index + 1}</td><td><strong>${escapeHtml(row.nama)}</strong><br><small>${escapeHtml(row.nip)}</small></td>
-                <td>${row.hariHadir}</td><td>${row.masuk}</td><td>${row.pulang}</td><td>${row.lengkap}</td><td>${row.belumLengkap}</td><td>${row.kelengkapan}%</td><td>${escapeHtml(row.status)}</td>
+                <td>${row.hariHadir}</td><td>${row.izin || 0}</td><td>${row.sakit || 0}</td><td>${row.tugas || 0}</td><td>${row.masuk}</td><td>${row.pulang}</td><td>${row.lengkap}</td><td>${row.belumLengkap}</td><td>${row.kelengkapan}%</td><td>${escapeHtml(row.status)}</td>
             </tr>`).join('');
             const detailHTML = detailRows.map((row, index) => `<tr>
-                <td>${index + 1}</td><td>${escapeHtml(formatTanggalRekap(String(row.tanggal || '')))}</td><td>${escapeHtml(row.nama || '-')}<br><small>${escapeHtml(row.nip || '-')}</small></td><td>${escapeHtml(row.tipe || '-')}</td><td>${escapeHtml(formatJamIndonesia(row.jam || '-'))}</td><td>${escapeHtml(row.nama_lokasi || row.lokasi || '-')}</td><td>${escapeHtml(row.jarak || '-')}</td><td>${escapeHtml(row.keterangan || '-')}</td>
+                <td>${index + 1}</td><td>${escapeHtml(formatTanggalRekap(String(row.tanggal || '')))}</td><td>${escapeHtml(row.nama || '-')}<br><small>${escapeHtml(row.nip || '-')}</small></td><td>${escapeHtml(row.tipe || '-')}</td><td>${escapeHtml(formatJamIndonesia(row.jam || '-'))}</td><td>${escapeHtml(row.nama_lokasi || row.lokasi || '-')}</td><td>${escapeHtml(row.jarak || '-')}</td><td>${escapeHtml(statusDescription(row) || '-')}</td>
             </tr>`).join('');
             return `<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Rekap Kehadiran Guru</title><style>
                 @page{size:A4 landscape;margin:12mm} body{font-family:Arial,sans-serif;color:#111827;font-size:10px} h1{margin:0;font-size:20px} h2{font-size:13px;margin:18px 0 6px}.meta{margin:5px 0 12px;color:#475569}.cards{display:flex;gap:8px;margin:10px 0 15px}.card{border:1px solid #cbd5e1;border-radius:6px;padding:8px 12px;min-width:110px}.card b{display:block;font-size:17px;margin-top:3px}table{width:100%;border-collapse:collapse;margin-bottom:16px}th,td{border:1px solid #cbd5e1;padding:5px 6px;vertical-align:top}th{background:#f1f5f9;text-transform:uppercase;font-size:8px}.footer{margin-top:12px;color:#64748b;font-size:8px;text-align:right}small{color:#64748b}</style></head><body>
                 <h1>REKAP KEHADIRAN GURU</h1><div class="meta">SMK CANDA BHIRAWA PARE<br>Periode: <strong>${escapeHtml(adminReportPeriodLabel || '-')}</strong><br>Dicetak: ${escapeHtml(new Date().toLocaleString('id-ID'))}</div>
                 <div class="cards"><div class="card">Total Guru<b>${summaryRows.length}</b></div><div class="card">Guru Hadir<b>${guruHadir}</b></div><div class="card">Total Rekaman<b>${detailRows.length}</b></div><div class="card">Hari Lengkap<b>${totalLengkap}</b></div><div class="card">Belum Lengkap<b>${totalBelum}</b></div></div>
-                <h2>Ringkasan per Guru</h2><table><thead><tr><th>No</th><th>Guru / NIP</th><th>Hari Hadir</th><th>Masuk</th><th>Pulang</th><th>Lengkap</th><th>Belum</th><th>%</th><th>Status</th></tr></thead><tbody>${summaryHTML || '<tr><td colspan="9">Tidak ada data</td></tr>'}</tbody></table>
+                <h2>Ringkasan per Guru</h2><table><thead><tr><th>No</th><th>Guru / NIP</th><th>Hari Hadir</th><th>Izin</th><th>Sakit</th><th>Tugas</th><th>Masuk</th><th>Pulang</th><th>Lengkap</th><th>Belum</th><th>%</th><th>Status</th></tr></thead><tbody>${summaryHTML || '<tr><td colspan="12">Tidak ada data</td></tr>'}</tbody></table>
                 <h2>Detail Rekaman</h2><table><thead><tr><th>No</th><th>Tanggal</th><th>Guru / NIP</th><th>Tipe</th><th>Jam</th><th>Lokasi</th><th>Jarak</th><th>Keterangan</th></tr></thead><tbody>${detailHTML || '<tr><td colspan="8">Tidak ada data</td></tr>'}</tbody></table>
                 <div class="footer">Dokumen dibuat otomatis oleh E-Presensi & Jurnal Guru</div></body></html>`;
         }
@@ -3867,9 +4248,9 @@ function applyDateFilters() {
 
             doc.autoTable({
                 startY: 42,
-                head: [['No', 'Guru / NIP', 'Hari Hadir', 'Masuk', 'Pulang', 'Lengkap', 'Belum', 'Kelengkapan', 'Status']],
-                body: adminReportSummaryRows.map((row, index) => [index + 1, `${row.nama}\n${row.nip}`, row.hariHadir, row.masuk, row.pulang, row.lengkap, row.belumLengkap, `${row.kelengkapan}%`, row.status]),
-                styles: { fontSize: 7, cellPadding: 2, overflow: 'linebreak' },
+                head: [['No', 'Guru / NIP', 'Hari Hadir', 'Izin', 'Sakit', 'Tugas', 'Masuk', 'Pulang', 'Lengkap', 'Belum', 'Kelengkapan', 'Status']],
+                body: adminReportSummaryRows.map((row, index) => [index + 1, `${row.nama}\n${row.nip}`, row.hariHadir, row.izin || 0, row.sakit || 0, row.tugas || 0, row.masuk, row.pulang, row.lengkap, row.belumLengkap, `${row.kelengkapan}%`, row.status]),
+                styles: { fontSize: 6.2, cellPadding: 1.6, overflow: 'linebreak' },
                 headStyles: { fillColor: [88, 28, 135], textColor: 255 },
                 columnStyles: { 0: { cellWidth: 9 }, 1: { cellWidth: 54 } },
                 margin: { left: 14, right: 14 }
@@ -4103,8 +4484,27 @@ function getActiveStatusKehadiranForDate(dateDdMmYyyy = getTodayDateString()) {
 function statusCategory(jenis) {
     const j = String(jenis || '').toLowerCase();
     if (j.includes('sakit')) return 'sakit';
-    if (j.includes('dinas')) return 'dinas';
+    if (j.includes('dinas') || j.includes('tugas')) return 'dinas';
     return 'izin';
+}
+
+function statusDescription(row) {
+    if (!row) return '';
+    const candidates = [
+        row.keterangan, row.Keterangan,
+        row.alasan, row.Alasan,
+        row.catatan, row.Catatan,
+        row.status_keterangan, row.keterangan_status,
+        row.keterangan_izin_sakit_tugas,
+        row.keterangan_izin, row.keterangan_sakit,
+        row.keterangan_tugas, row.keterangan_tugas_dinas,
+        row.description, row.deskripsi
+    ];
+    for (const value of candidates) {
+        const text = String(value ?? '').trim();
+        if (text) return text;
+    }
+    return '';
 }
 
 function statusBadgeMarkup(jenis) {
@@ -4212,6 +4612,7 @@ async function fetchStatusKehadiranFromGAS() {
     if (IS_PREVIEW || !currentSession) {
         renderStatusKehadiranHistory();
         renderAdminStatusKehadiranPanel();
+        if (currentSession && currentSession.role === 'Admin') applyAdminAttendanceReport(false);
         return mockStatusKehadiranDb;
     }
     try {
@@ -4219,9 +4620,13 @@ async function fetchStatusKehadiranFromGAS() {
         const res = await fetch(`${GAS_URL}?action=getStatusKehadiran${nipParam}&_=${Date.now()}`, { cache: 'no-store' });
         const data = await res.json();
         if (!data.success) throw new Error(data.message || 'Data ketidakhadiran gagal dimuat.');
-        mockStatusKehadiranDb = Array.from(data.status || data.data || []);
+        mockStatusKehadiranDb = Array.from(data.status || data.data || []).map(row => ({
+            ...row,
+            keterangan: statusDescription(row)
+        }));
         renderStatusKehadiranHistory();
         if (currentSession.role === 'Admin') {
+            applyAdminAttendanceReport(false);
             renderAdminStatusKehadiranPanel();
             renderAdminTeacherAttendancePanel(false);
             refreshAdminWaStatus(false);
@@ -4260,7 +4665,7 @@ function renderStatusKehadiranHistory() {
             <td class="py-3 px-5"><div class="font-bold text-slate-800">${escapeHtml(row.nama || '-')}</div><div class="text-[10px] text-slate-400 font-mono">${escapeHtml(row.nip || '-')}</div></td>
             <td class="py-3 px-5">${statusBadgeMarkup(row.jenis)}</td>
             <td class="py-3 px-5 whitespace-nowrap font-semibold">${escapeHtml(period)}</td>
-            <td class="py-3 px-5 max-w-sm"><div class="line-clamp-3">${escapeHtml(row.keterangan || '-')}</div></td>
+            <td class="py-3 px-5 max-w-sm"><div class="line-clamp-3">${escapeHtml(statusDescription(row) || '-')}</div></td>
             <td class="py-3 px-5">${surat}</td>
             <td class="py-3 px-5"><span class="inline-flex px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-bold">${escapeHtml(row.status || 'Tercatat')}</span></td>
         </tr>`;
@@ -4293,7 +4698,7 @@ function renderAdminStatusKehadiranPanel() {
         return `<div class="rounded-xl border border-slate-100 p-4 bg-slate-50/50 min-w-0">
             <div class="flex items-start justify-between gap-2"><div class="min-w-0"><div class="text-xs font-extrabold text-slate-800 truncate">${escapeHtml(row.nama || 'Guru')}</div><div class="text-[9px] font-mono text-slate-400 truncate">${escapeHtml(row.nip || '-')}</div></div>${statusBadgeMarkup(row.jenis)}</div>
             <div class="mt-2 text-[10px] text-slate-500"><i class="fa-regular fa-calendar mr-1"></i>${escapeHtml(start === end ? start : `${start} s.d. ${end}`)}</div>
-            <div class="mt-2 text-[10px] text-slate-600 line-clamp-2">${escapeHtml(row.keterangan || '-')}</div>
+            <div class="mt-2 text-[10px] text-slate-600 line-clamp-2">${escapeHtml(statusDescription(row) || '-')}</div>
             <div class="mt-3 pt-2 border-t border-slate-100">${surat}</div>
         </div>`;
     }).join('');
