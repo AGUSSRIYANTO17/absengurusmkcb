@@ -971,7 +971,7 @@
                     <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="fa-brands fa-whatsapp text-lg"></i></div>
                     <div>
                         <h3 class="text-base font-bold text-slate-900">Peringatan WhatsApp Guru Belum Absen</h3>
-                        <p class="text-xs text-slate-500 mt-1">Status hari ini. Pengiriman otomatis dijalankan oleh Google Apps Script agar tetap aktif meskipun halaman admin ditutup.</p>
+                        <p class="text-xs text-slate-500 mt-1">Otomatis setelah pukul <b>07:30 WIB</b> bila absen masuk belum tercatat. Guru berstatus Izin, Sakit, atau Tugas tidak dikirimi reminder.</p>
                     </div>
                 </div>
             </div>
@@ -1001,7 +1001,7 @@
             </table>
         </div>
         <div class="px-5 py-4 bg-emerald-50/60 border-t border-emerald-100 text-[11px] text-emerald-800 leading-relaxed">
-            <i class="fa-solid fa-circle-info mr-1"></i> Agar WA otomatis aktif, isi nomor guru pada kolom <b>no_wa / whatsapp / hp / telepon</b> di data pengguna, lalu pasang file <b>WA_REMINDER_PATCH.gs</b> yang disertakan dalam paket update dan isi token Fonnte di Script Properties.
+            <i class="fa-solid fa-circle-info mr-1"></i> Reminder otomatis aktif setelah <b>07:30 WIB</b>. Isi nomor guru pada kolom <b>no_wa / whatsapp / hp / telepon</b>, pasang <b>WA_REMINDER_PATCH.gs</b>, isi <b>FONNTE_TOKEN</b>, lalu jalankan <b>WA_setupReminderTrigger()</b> satu kali.
         </div>
     </div>
 
@@ -1115,7 +1115,7 @@
         //  SAKLAR DEPLOYMENT & KONFIGURASI UTAMA
         // ==========================================
         const IS_PREVIEW = false; 
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbz92e_BF8fOmbuAzfnZugWOhyzKr7X7_nEsJml5CLNxdhCjV9ifXWCD-BeQX68tR_Odaw/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwU26Om05enHFeZJZRpq0rPYs34ROAdUgJofDgsaXIzQhoGJ9M7ZxpPMbIykyLxgeTFjA/exec";
         const ATTENDANCE_RADIUS_METERS = 200;
 
         // State Global Aplikasi
@@ -4179,7 +4179,7 @@ function applyDateFilters() {
                 showToast('Nomor WhatsApp guru belum tersedia.', 'error');
                 return;
             }
-            const message = `Yth. Bapak/Ibu ${teacherName}, berdasarkan sistem E-Presensi hari ini Anda belum tercatat melakukan absen masuk. Mohon segera melakukan presensi apabila sudah berada di sekolah. Terima kasih.`;
+            const message = `Yth. Bapak/Ibu ${teacherName}, sampai pukul 07:30 WIB hari ini sistem E-Presensi belum mencatat absen masuk Anda. Mohon segera melakukan presensi apabila sudah berada di sekolah. Jika sedang Izin, Sakit, atau Tugas, mohon pastikan status sudah tercatat. Terima kasih.`;
             window.open(`https://wa.me/${target}?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
         }
 
