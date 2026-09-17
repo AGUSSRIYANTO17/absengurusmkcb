@@ -490,7 +490,7 @@
                             </button>
                         </div>
                         <p id="pulang-time-info" class="text-[10px] text-center text-amber-600 font-semibold -mt-2">
-                            <i class="fa-solid fa-clock"></i> Tombol Pulang aktif mulai pukul 14.00 WIB.
+                            <i class="fa-solid fa-clock"></i> Tombol Pulang aktif mulai pukul 14.30 WIB.
                         </p>
 
                         <!-- Kampus dipilih otomatis dari GPS berdasarkan lokasi terdekat -->
@@ -3783,7 +3783,7 @@ function focusAdminDeviceMarker(index) {
             if (!input) return;
 
             if (type === 'Pulang' && !isPulangTimeAllowed()) {
-                showToast('Absen Pulang baru dapat dilakukan mulai pukul 14.00 WIB.', 'error');
+                showToast('Absen Pulang baru dapat dilakukan mulai pukul 14.30 WIB.', 'error');
                 return;
             }
 
@@ -3829,7 +3829,7 @@ function focusAdminDeviceMarker(index) {
                 return;
             }
             if (selectedTipe === 'Pulang' && !isPulangTimeAllowed()) {
-                showToast('Absen Pulang baru aktif mulai pukul 14.00 WIB.', 'error');
+                showToast('Absen Pulang baru aktif mulai pukul 14.30 WIB.', 'error');
                 return;
             }
             if (!cameraActive || !isFaceDetected) {
@@ -3958,7 +3958,7 @@ function focusAdminDeviceMarker(index) {
             }
             if (selectedTipe === 'Pulang' && !isPulangTimeAllowed()) {
                 input.value = '';
-                showToast('Absen Pulang baru aktif mulai pukul 14.00 WIB.', 'error');
+                showToast('Absen Pulang baru aktif mulai pukul 14.30 WIB.', 'error');
                 return;
             }
             if (!isWithinAttendanceRadius) {
@@ -4082,7 +4082,7 @@ function focusAdminDeviceMarker(index) {
                 btnPulang.innerHTML = hasPulang
                     ? '<i class="fa-solid fa-circle-check mb-1 block text-lg"></i> Sudah Pulang'
                     : !pulangAllowed
-                        ? '<i class="fa-solid fa-lock mb-1 block text-lg"></i> Pulang 14.00 WIB'
+                        ? '<i class="fa-solid fa-lock mb-1 block text-lg"></i> Pulang 14.30 WIB'
                         : '<i class="fa-solid fa-right-from-bracket mb-1 block text-lg"></i> Pulang';
             }
 
@@ -4092,7 +4092,7 @@ function focusAdminDeviceMarker(index) {
                     pulangInfo.innerHTML = '<i class="fa-solid fa-unlock"></i> Tombol Pulang sudah aktif.';
                 } else {
                     pulangInfo.className = 'text-[10px] text-center text-amber-600 font-semibold -mt-2';
-                    pulangInfo.innerHTML = '<i class="fa-solid fa-clock"></i> Tombol Pulang aktif mulai pukul 14.00 WIB.';
+                    pulangInfo.innerHTML = '<i class="fa-solid fa-clock"></i> Tombol Pulang aktif mulai pukul 14.30 WIB.';
                 }
             }
         }
@@ -4127,7 +4127,7 @@ function focusAdminDeviceMarker(index) {
             if (pulangBelumAktif) {
                 capturePhotoBtn.disabled = true;
                 capturePhotoBtn.className = 'w-full bg-slate-200 text-slate-400 py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 cursor-not-allowed';
-                capturePhotoBtn.innerHTML = '<i class="fa-solid fa-clock"></i> Pulang Aktif 14.00 WIB';
+                capturePhotoBtn.innerHTML = '<i class="fa-solid fa-clock"></i> Pulang Aktif 14.30 WIB';
 
                 submitPresensiBtn.disabled = true;
                 submitPresensiBtn.className = 'w-full bg-slate-200 text-slate-400 py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 cursor-not-allowed';
@@ -4196,7 +4196,7 @@ function focusAdminDeviceMarker(index) {
 
             const selectedTipe = document.querySelector('input[name="tipe_absen"]:checked')?.value || 'Masuk';
             if (selectedTipe === 'Pulang' && !isPulangTimeAllowed()) {
-                showToast("Absen Pulang baru dapat dilakukan mulai pukul 14.00 WIB.", "error");
+                showToast("Absen Pulang baru dapat dilakukan mulai pukul 14.30 WIB.", "error");
                 return;
             }
 
